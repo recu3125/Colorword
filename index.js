@@ -158,7 +158,7 @@ function avgcolor(colorlist) {
 }
 
 function testcolors(colorscount) {
-  var bias = new RGBColor(0, 0, 255, 255)
+  var bias = new RGBColor(0, 255, 0, 255)
   var bstrength = 1 //1<=
   var colorslist = []
   for (var i = 0; i < colorscount; i++) {
@@ -208,14 +208,21 @@ function getmaxpart(colors) {
       }
     }
   }
+  // var xmin=1000000000,ymin=100000000000,zmin=100000000000000
+  // var xmax=-1000000000,ymax=-100000000000,zmax=-100000000000000
   for (i = 0; i < colorlabs.length; i++) {
     var x, y, z
     x = Math.floor((colorlabs[i][0]) / 25)
-    y = Math.floor((colorlabs[i][1] / 2 + 50) / 25)
-    z = Math.floor((colorlabs[i][2] / 2 + 50) / 25)
-    // console.log(colorlabs[i][0],
-    //   colorlabs[i][1],
-    //   colorlabs[i][2])
+    y = Math.floor((colorlabs[i][1] + 100) / 2 / 25)
+    z = Math.floor((colorlabs[i][2] + 101) / 2.1 / 25)
+    // xmin=Math.min(xmin,x)
+    // ymin=Math.min(ymin,y)
+    // zmin=Math.min(zmin,z)
+    // xmax=Math.max(xmax,x)
+    // ymax=Math.max(ymax,y)
+    // zmax=Math.max(zmax,z)
+    // console.log(xmin,ymin,zmin,xmax,ymax,zmax)
+    // console.log(x,y,z)
     parts[x][y][z].push(colorlabs[i])
   }
   var max = 0
@@ -233,28 +240,63 @@ function getmaxpart(colors) {
   return parts[maxloc[0]][maxloc[1]][maxloc[2]]
 }
 function LABtoRGB(LAB) {
-  // Convert LAB to XYZ
-  let y = (LAB[0] + 16) / 116;
-  let x = LAB[1] / 500 + y;
-  let z = y - LAB[2] / 200;
+  let L = LAB[0]
+  let A = LAB[1]
+  let B = LAB[2]
 
-  // Calculate XYZ to RGB
-  let r = x * 3.2406 + y * -1.5372 + z * -0.4986;
-  let g = x * -0.9689 + y * 1.8758 + z * 0.0415;
-  let b = x * 0.0557 + y * -0.2040 + z * 1.0570;
+  let y = (L + 16) / 116
+  let x = A / 500 + y
+  let z = y - B / 200
 
-  // Adjust gamma
-  r = r > 0.0031308 ? 1.055 * Math.pow(r, 1 / 2.4) - 0.055 : 12.92 * r;
-  g = g > 0.0031308 ? 1.055 * Math.pow(g, 1 / 2.4) - 0.055 : 12.92 * g;
-  b = b > 0.0031308 ? 1.055 * Math.pow(b, 1 / 2.4) - 0.055 : 12.92 * b;
+  if (Math.pow(y, 3) > 0.008856) {
+    y = Math.pow(y, 3)
+  } else {
+    y = (y - 16 / 116) / 7.787
+  }
 
-  // Convert to 0-255 range
-  var rgb = []
-  rgb[0] = Math.round(r * 255);
-  rgb[1] = Math.round(g * 255);
-  rgb[2] = Math.round(b * 255);
+  if (Math.pow(x, 3) > 0.008856) {
+    x = Math.pow(x, 3)
+  } else {
+    x = (x - 16 / 116) / 7.787
+  }
 
-  return new RGBColor(rgb[0],rgb[1],rgb[2]);
+  if (Math.pow(z, 3) > 0.008856) {
+    z = Math.pow(z, 3)
+  } else {
+    z = (z - 16 / 116) / 7.787
+  }
+
+  let xPrime = x * 0.95047
+  let yPrime = y * 1.00000
+  let zPrime = z * 1.08883
+
+  let r = xPrime * 3.2406 + yPrime * -1.5372 + zPrime * -0.4986
+  let g = xPrime * -0.9689 + yPrime * 1.8758 + zPrime * 0.0415
+  let b = xPrime * 0.0557 + yPrime * -0.2040 + zPrime * 1.0570
+
+  if (r > 0.0031308) {
+    r = 1.055 * (Math.pow(r, (1 / 2.4))) - 0.055
+  } else {
+    r *= 12.92
+  }
+
+  if (g > 0.0031308) {
+    g = 1.055 * (Math.pow(g, (1 / 2.4))) - 0.055
+  } else {
+    g *= 12.92
+  }
+
+  if (b > 0.0031308) {
+    b = 1.055 * (Math.pow(b, (1 / 2.4))) - 0.055
+  } else {
+    b *= 12.92
+  }
+
+  let rFinal = Math.round(r * 255);
+  let gFinal = Math.round(g * 255);
+  let bFinal = Math.round(b * 255);
+
+  return new RGBColor(rFinal, gFinal, bFinal, 255);
 }
 
 function RGBtoLAB(color) {
@@ -265,26 +307,54 @@ function RGBtoLAB(color) {
   var r = color.r
   var g = color.g
   var b = color.b
-  
-  let rL = r/255;
-  let gL = g/255;
-  let bL = b/255;
 
-  rL = (rL > 0.04045) ? Math.pow(((rL + 0.055)/1.055), 2.4) : (rL / 12.92);
-  gL = (gL > 0.04045) ? Math.pow(((gL + 0.055)/1.055), 2.4) : (gL / 12.92);
-  bL = (bL > 0.04045) ? Math.pow(((bL + 0.055)/1.055), 2.4) : (bL / 12.92);
+  let rPrime = r / 255;
+  let gPrime = g / 255;
+  let bPrime = b / 255;
 
-  let x = (rL * 0.4124) + (gL * 0.3576) + (bL * 0.1805);
-  let y = (rL * 0.2126) + (gL * 0.7152) + (bL * 0.0722);
-  let z = (rL * 0.0193) + (gL * 0.1192) + (bL * 0.9505);
+  if (rPrime > 0.04045) {
+    rPrime = Math.pow(((rPrime + 0.055) / 1.055), 2.4);
+  } else {
+    rPrime /= 12.92;
+  }
 
-  x = (x > 0.008856) ? Math.pow(x, (1/3)) : (7.787 * x) + 16/116;
-  y = (y > 0.008856) ? Math.pow(y, (1/3)) : (7.787 * y) + 16/116;
-  z = (z > 0.008856) ? Math.pow(z, (1/3)) : (7.787 * z) + 16/116;
+  if (gPrime > 0.04045) {
+    gPrime = Math.pow(((gPrime + 0.055) / 1.055), 2.4);
+  } else {
+    gPrime /= 12.92;
+  }
+
+  if (bPrime > 0.04045) {
+    bPrime = Math.pow(((bPrime + 0.055) / 1.055), 2.4);
+  } else {
+    bPrime /= 12.92;
+  }
+
+  let x = (rPrime * 0.4124 + gPrime * 0.3576 + bPrime * 0.1805) / 0.95047;
+  let y = (rPrime * 0.2126 + gPrime * 0.7152 + bPrime * 0.0722) / 1.00000;
+  let z = (rPrime * 0.0193 + gPrime * 0.1192 + bPrime * 0.9505) / 1.08883;
+
+  if (x > 0.008856) {
+    x = Math.pow(x, (1 / 3));
+  } else {
+    x = (7.787 * x) + (16 / 116);
+  }
+
+  if (y > 0.008856) {
+    y = Math.pow(y, (1 / 3));
+  } else {
+    y = (7.787 * y) + (16 / 116);
+  }
+
+  if (z > 0.008856) {
+    z = Math.pow(z, (1 / 3));
+  } else {
+    z = (7.787 * z) + (16 / 116);
+  }
 
   let L = (116 * y) - 16;
   let A = 500 * (x - y);
-  let B = 200 * (y - z) + 13;
+  let B = 200 * (y - z);
 
   cache[color.r][color.g][color.b] = [L, A, B]
   return [L, A, B];
