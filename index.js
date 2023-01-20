@@ -37,7 +37,7 @@ function makeimage() {
   RGBs.splice(0, 1)
   step()
   function step() {
-    console.log(RGBs.length)
+    console.log(`${imagewh * imagewh - RGBs.length} / ${imagewh * imagewh}`)
     var prepixels = JSON.parse(JSON.stringify(pixels));
     for (var i = 0; i < imagewh; i++) {
       for (var j = 0; j < imagewh; j++) {
@@ -49,6 +49,7 @@ function makeimage() {
         // idealRGB = avgcolor([idealRGB,pixels[imagewh / 2][imagewh / 2]])
         var mindist = 10000000
         var minloc = 0
+        
         for (var k = 0; k < RGBs.length; k++) {
           if (colordist(RGBs[k], idealRGB) < mindist) {
             mindist = colordist(RGBs[k], idealRGB)
@@ -121,7 +122,8 @@ function aroundcolor(pixels, prepixels, i, j) {
     }
   }
 
-  if (RGBlist.length <= Math.round(Math.random() * 10)) {
+  pixeltoextend = [0,0,0,1,1,1,1,2,2,3,3]
+  if (RGBlist.length <= pixeltoextend[Math.floor(Math.random() * 10)]) {
     return false
   }
   return avgcolor(RGBlist)
@@ -142,7 +144,7 @@ function avgcolor(RGBlist) {
 }
 
 function testcolors(RGBscount) {
-  var bias = new RGBColor(200, 200, 100, 255)
+  var bias = new RGBColor(255, 170, 255, 255)
   var bstrength = 1
   var RGBslist = []
   for (var i = 0; i < RGBscount; i++) {
