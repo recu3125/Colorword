@@ -29,43 +29,38 @@ function makeimage() {
     pixels.push(row)
   }
 
-
-  // var colors = testcolors(400)
-  // centercolor = new Color(0,0,0)
-  // colors.sort((a, b) => colordist(a,centercolor) - colordist(b,centercolor))
-  // for (var i = 0; i < 400; i++) {
-  //   for (var j = 0; j < 100; j++) {
-  //     pixels[150 + j][i] = colors[i]
-  //   }
-  // }
-  var colors = testcolors(imagewh * imagewh)
-  pixels[imagewh / 2][imagewh / 2] = LABtoRGB(mostcolor(colors))
-  colors.splice(0, 1)
+  var RGBs = testcolors(imagewh * imagewh)
+  var mainRGB = LABtoRGB(mostcolor(RGBs))
+  console.log(mainRGB)
+  console.log(mostcolor(RGBs))
+  pixels[imagewh / 2][imagewh / 2] = mainRGB
+  RGBs.splice(0, 1)
   step()
   function step() {
-    console.log(colors.length)
+    console.log(RGBs.length)
     var prepixels = JSON.parse(JSON.stringify(pixels));
     for (var i = 0; i < imagewh; i++) {
       for (var j = 0; j < imagewh; j++) {
         if ((i == imagewh / 2 && j == imagewh / 2) || prepixels[i][j] != false) continue;
-        var idealcolor = aroundcolor(pixels, prepixels, i, j)
-        if (idealcolor == false) {
+        var idealRGB = aroundcolor(pixels, prepixels, i, j)
+        if (idealRGB == false) {
           continue;
         }
+        // idealRGB = avgcolor([idealRGB,pixels[imagewh / 2][imagewh / 2]])
         var mindist = 10000000
         var minloc = 0
-        for (var k = 0; k < colors.length; k++) {
-          if (colordist(colors[k], idealcolor) < mindist) {
-            mindist = colordist(colors[k], idealcolor)
+        for (var k = 0; k < RGBs.length; k++) {
+          if (colordist(RGBs[k], idealRGB) < mindist) {
+            mindist = colordist(RGBs[k], idealRGB)
             minloc = k
           }
         }
-        pixels[i][j] = colors[minloc]
-        colors.splice(minloc, 1)
+        pixels[i][j] = RGBs[minloc]
+        RGBs.splice(minloc, 1)
       }
     }
     viewimage(pixels, ctx)
-    if (colors.length > 0) {
+    if (RGBs.length > 0) {
       setTimeout(() => {
         step()
       }, 0);
@@ -91,30 +86,20 @@ function viewimage(pixels, ctx) {
   ctx.putImageData(img, 0, 0);
 }
 
-// function dot(img, x, y, color) {
-//   var w = img.width
-//   var h = img.height
-//   var location = w * y + x
-//   img.data[location * 4] = color[0]
-//   img.data[location * 4 + 1] = color[1]
-//   img.data[location * 4 + 2] = color[2]
-//   img.data[location * 4 + 3] = color[3]
-//   return img
-// }
 
-function colordist(color1, color2) {
-  var LAB1 = RGBtoLAB(color1)
-  var LAB2 = RGBtoLAB(color2)
+function colordist(RGB1, RGB2) {
+  var LAB1 = RGBtoLAB(RGB1)
+  var LAB2 = RGBtoLAB(RGB2)
   return Math.pow(LAB1[0] - LAB2[0], 2) * 1.5 + Math.pow(LAB1[1] - LAB2[1], 2) + Math.pow(LAB1[2] - LAB2[2], 2)
 }
-function colordistlab(color1, color2) {
-  var LAB1 = color1
-  var LAB2 = color2
+function colordistlab(LAB1, LAB2) {
+  var LAB1 = LAB1
+  var LAB2 = LAB2
   return Math.pow(LAB1[0] - LAB2[0], 2) * 1.5 + Math.pow(LAB1[1] - LAB2[1], 2) + Math.pow(LAB1[2] - LAB2[2], 2)
 }
 
 function aroundcolor(pixels, prepixels, i, j) {
-  var colorlist = []
+  var RGBlist = []
   // var aroundlist = [
   //   [-1, -1], [-1, 0], [-1, 1],
   //    [0, -1],           [0, 1],
@@ -132,41 +117,35 @@ function aroundcolor(pixels, prepixels, i, j) {
     var x = i + aroundlist[k][0]
     var y = j + aroundlist[k][1]
     if (imagewh > x && imagewh > y && x >= 0 && y >= 0 && prepixels[x][y] != false) {
-      colorlist.push(pixels[x][y])
+      RGBlist.push(pixels[x][y])
     }
   }
-  // for (var k = 0; k < aroundlist2.length; k++) {
-  //   var x = i + aroundlist2[k][0]
-  //   var y = j + aroundlist2[k][1]
-  //   if (imagewh > x && imagewh > y && x >= 0 && y >= 0 && pixels[x][y] != false) {
-  //     colorlist.push(pixels[x][y])
-  //   }
-  // }
-  if (colorlist.length <= Math.round(Math.random() * 10)) {
+
+  if (RGBlist.length <= Math.round(Math.random() * 10)) {
     return false
   }
-  return avgcolor(colorlist)
+  return avgcolor(RGBlist)
 }
 
-function avgcolor(colorlist) {
+function avgcolor(RGBlist) {
   var result = new RGBColor(0, 0, 0, 255)
-  for (var i = 0; i < colorlist.length; i++) {
-    var color = colorlist[i]
-    result.r += color.r
-    result.g += color.g
-    result.b += color.b
+  for (var i = 0; i < RGBlist.length; i++) {
+    var RGB = RGBlist[i]
+    result.r += RGB.r
+    result.g += RGB.g
+    result.b += RGB.b
   }
-  result.r = Math.round(result.r / colorlist.length)
-  result.g = Math.round(result.g / colorlist.length)
-  result.b = Math.round(result.b / colorlist.length)
+  result.r = Math.round(result.r / RGBlist.length)
+  result.g = Math.round(result.g / RGBlist.length)
+  result.b = Math.round(result.b / RGBlist.length)
   return result
 }
 
-function testcolors(colorscount) {
-  var bias = new RGBColor(255, 0, 0, 255)
-  var bstrength = 2
-  var colorslist = []
-  for (var i = 0; i < colorscount; i++) {
+function testcolors(RGBscount) {
+  var bias = new RGBColor(200, 200, 100, 255)
+  var bstrength = 1
+  var RGBslist = []
+  for (var i = 0; i < RGBscount; i++) {
     var red = Math.round(Math.random() * 255)
     var green = Math.round(Math.random() * 255)
     var blue = Math.round(Math.random() * 255)
@@ -177,127 +156,74 @@ function testcolors(colorscount) {
       green = Math.round(green >= bias.g ? (-Math.pow((256 - green) * Math.pow(256 - bias.g, bstrength), 1 / (bstrength + 1)) + 256) : Math.pow(green * Math.pow(bias.g, bstrength), 1 / (bstrength + 1)))
       blue = Math.round(blue >= bias.b ? (-Math.pow((256 - blue) * Math.pow(256 - bias.b, bstrength), 1 / (bstrength + 1)) + 256) : Math.pow(blue * Math.pow(bias.b, bstrength), 1 / (bstrength + 1)))
     }
-    colorslist.push(new RGBColor(red, green, blue, alpha))
+    RGBslist.push(new RGBColor(red, green, blue, alpha))
   }
-  return colorslist
+  return RGBslist
 }
 
 // CIELAB
 var cache = new Array(256)
-for (i = 0; i < 256; i++) {
+for (var i = 0; i < 256; i++) {
   cache[i] = new Array(256)
   for (j = 0; j < 256; j++) {
     cache[i][j] = new Array(256).fill(0)
   }
 }
-function mostcolor(colors) {
-  colors = colors.map(color => RGBtoLAB(color))
-  var maxpart = getmaxpart(colors)
-  var avgL = 0, avgA = 0, avgB = 0
-  for (i = 0; i < maxpart.length; i++) {
-    avgL += maxpart[i][0]
-    avgA += maxpart[i][1]
-    avgB += maxpart[i][2]
-  }
-  avgL /= maxpart.length
-  avgA /= maxpart.length
-  avgB /= maxpart.length
-  var xyz = []
-  xyz[0] = avgL
-  xyz[1] = avgA
-  xyz[2] = avgB
-
-  var asdf = 4
-  while (asdf--) {
-    xyz = approachmost(xyz[0], xyz[1], xyz[2], colors, 30, 5)
-  }
-  var asdf = 4
-  while (asdf--) {
-    xyz = approachmost(xyz[0], xyz[1], xyz[2], colors, 10, 3)
-  }
-  var asdf = 4
-  var asdf = 4
-  while (asdf--) {
-    xyz = approachmost(xyz[0], xyz[1], xyz[2], colors, 7, 1)
-  }
-  var asdf = 4
-  while (asdf--) {
-    xyz = approachmost(xyz[0], xyz[1], xyz[2], colors, 3, 1)
-  }
-  return xyz
+function mostcolor(RGBs) {
+  var LABs = RGBs.map(RGB => RGBtoLAB(RGB))
+  maxpoint = [50, 0, 0]
+  maxpoint = approach(LABs, maxpoint, 64)
+  maxpoint = approach(LABs, maxpoint, 64)
+  console.log(maxpoint)
+  maxpoint = approach(LABs, maxpoint, 32)
+  maxpoint = approach(LABs, maxpoint, 32)
+  console.log(maxpoint)
+  maxpoint = approach(LABs, maxpoint, 16)
+  maxpoint = approach(LABs, maxpoint, 16)
+  console.log(maxpoint)
+  maxpoint = approach(LABs, maxpoint, 8)
+  maxpoint = approach(LABs, maxpoint, 8)
+  console.log(maxpoint)
+  maxpoint = approach(LABs, maxpoint, 4)
+  maxpoint = approach(LABs, maxpoint, 4)
+  console.log(maxpoint)
+  maxpoint = approach(LABs, maxpoint, 2)
+  maxpoint = approach(LABs, maxpoint, 2)
+  console.log(maxpoint)
+  maxpoint = approach(LABs, maxpoint, 1)
+  maxpoint = approach(LABs, maxpoint, 1)
+  console.log(maxpoint)
+  return maxpoint
 }
 
-function approachmost(x, y, z, colors, radius, step) {
-  var dir = []
-  dir[0] = countnearcolors(x + step, y, z, colors, radius)
-  dir[1] = countnearcolors(x, y + step, z, colors, radius)
-  dir[2] = countnearcolors(x, y, z + step, colors, radius)
-  dir[3] = countnearcolors(x - step, y, z, colors, radius)
-  dir[4] = countnearcolors(x, y - step, z, colors, radius)
-  dir[5] = countnearcolors(x, y, z - step, colors, radius)
-  var coords = [[step, 0, 0], [0, step, 0], [0, 0, step], [-step, 0, 0], [0, -step, 0], [0, 0, -step]]
-  var max = Math.max(dir[0], dir[1], dir[2], dir[3], dir[4], dir[5])
-  for (i = 0; i < 6; i++) {
-    if (max == dir[i]) {
-      x += coords[i][0]
-      y += coords[i][1]
-      z += coords[i][2]
-      return ([x, y, z])
+function approach(LABs, xyz, step) {
+  var offsets = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1], [0, 1, 1], [1, 1, 0], [1, 0, 1], [1, 1, 1], [0, -1, -1], [-1, -1, 0], [-1, 0, -1], [-1, -1, -1]]
+  var max = 0
+  resultxyz = [0, 0, 0]
+  for (var i = 0; i < offsets.length; i++) {
+    var x = xyz[0] + offsets[i][0] * step
+    var y = xyz[1] + offsets[i][1] * step
+    var z = xyz[2] + offsets[i][2] * step
+    var nearcountres = nearcount(LABs, x, y, z, Math.max(step/2,10))
+    if (nearcountres > max) {
+      max = nearcountres
+      resultxyz = [x, y, z]
     }
   }
+  return resultxyz
 }
 
-function countnearcolors(x, y, z, colors, radius) {
-  var count = 0
-  for (i = 0; i < colors.length; i++) {
-    if (colordistlab([x, y, z], colors[i]) <= radius) {
+function nearcount(LABs, x, y, z, radius) {
+  count = 0
+  for (var i = 0; i < LABs.length; i++) {
+    var dist = colordistlab(LABs[i], [x, y, z])
+    if (dist <= (radius * radius)) {
       count += 1
     }
   }
   return count
 }
 
-function getmaxpart(colors) {
-  // console.log(colors)
-  parts = new Array(4).fill(new Array(4).fill(new Array(4)))
-  for (i = 0; i < 4; i++) {
-    for (j = 0; j < 4; j++) {
-      for (k = 0; k < 4; k++) {
-        parts[i][j][k] = []
-      }
-    }
-  }
-  // var xmin=1000000000,ymin=100000000000,zmin=100000000000000
-  // var xmax=-1000000000,ymax=-100000000000,zmax=-100000000000000
-  for (i = 0; i < colors.length; i++) {
-    var x, y, z
-    x = Math.floor((colors[i][0]) / 25)
-    y = Math.floor((colors[i][1] + 86.184636497626) / 184.43885518379 *4)
-    z = Math.floor((colors[i][2] + 107.863681044952) / 202.34616649140 *4)
-    // xmin=Math.min(xmin,colors[i][0])
-    // ymin=Math.min(ymin,colors[i][1])
-    // zmin=Math.min(zmin,colors[i][2])
-    // xmax=Math.max(xmax,colors[i][0])
-    // ymax=Math.max(ymax,colors[i][1])
-    // zmax=Math.max(zmax,colors[i][2])
-    // console.log(xmin,ymin,zmin,xmax,ymax,zmax)
-    // console.log(x,y,z)
-    parts[x][y][z].push(colors[i])
-  }
-  var max = 0
-  var maxloc = []
-  for (i = 0; i < 4; i++) {
-    for (j = 0; j < 4; j++) {
-      for (k = 0; k < 4; k++) {
-        if (parts[i][j][k].length > max) {
-          maxloc = [i, j, k]
-          max = parts[i][j][k].length
-        }
-      }
-    }
-  }
-  return parts[maxloc[0]][maxloc[1]][maxloc[2]]
-}
 function LABtoRGB(LAB) {
   let L = LAB[0]
   let A = LAB[1]
@@ -358,14 +284,14 @@ function LABtoRGB(LAB) {
   return new RGBColor(rFinal, gFinal, bFinal, 255);
 }
 
-function RGBtoLAB(color) {
-  if (cache[color.r][color.g][color.b] !== 0) {
-    return cache[color.r][color.g][color.b]
+function RGBtoLAB(RGB) {
+  if (cache[RGB.r][RGB.g][RGB.b] !== 0) {
+    return cache[RGB.r][RGB.g][RGB.b]
   }
 
-  var r = color.r
-  var g = color.g
-  var b = color.b
+  var r = RGB.r
+  var g = RGB.g
+  var b = RGB.b
 
   let rPrime = r / 255;
   let gPrime = g / 255;
@@ -415,6 +341,6 @@ function RGBtoLAB(color) {
   let A = 500 * (x - y);
   let B = 200 * (y - z);
 
-  cache[color.r][color.g][color.b] = [L, A, B]
+  cache[RGB.r][RGB.g][RGB.b] = [L, A, B]
   return [L, A, B];
 }
