@@ -29,8 +29,10 @@ function makeimage() {
     pixels.push(row)
   }
 
-  var RGBs = testcolors(imagewh * imagewh)
+
+  var RGBs = matchcolorscount(testcolors(imagewh * imagewh/1000),imagewh * imagewh)
   var mainRGB = LABtoRGB(mostcolor(RGBs))
+  console.log(mainRGB)
   pixels[imagewh / 2][imagewh / 2] = mainRGB
   RGBs.splice(0, 1)
   step()
@@ -44,7 +46,7 @@ function makeimage() {
         if (idealRGB == false) {
           continue;
         }
-        idealRGB = biasavgcolor(mainRGB,idealRGB,100)
+        idealRGB = biasavgcolor(mainRGB, idealRGB, 70)
         var mindist = 10000000
         var minloc = 0
         for (var k = 0; k < RGBs.length; k++) {
@@ -57,6 +59,7 @@ function makeimage() {
         RGBs.splice(minloc, 1)
       }
     }
+    if(pixels[imagewh/2+1][imagewh/2]!=false&&pixels[imagewh/2-1][imagewh/2]!=false&&pixels[imagewh/2][imagewh/2+1]!=false&&pixels[imagewh/2][imagewh/2-1]!=false) pixels[imagewh/2][imagewh/2]=avgcolor([pixels[imagewh/2][imagewh/2+1],pixels[imagewh/2+1][imagewh/2],pixels[imagewh/2][imagewh/2-1],pixels[imagewh/2-1][imagewh/2]])
     viewimage(pixels, ctx)
     if (RGBs.length > 0) {
       setTimeout(() => {
@@ -84,6 +87,17 @@ function viewimage(pixels, ctx) {
   ctx.putImageData(img, 0, 0);
 }
 
+
+function matchcolorscount(RGBs, targetnum) {
+  var matchedRGBs = JSON.parse(JSON.stringify(RGBs));
+  while (matchedRGBs.length > targetnum) {
+    matchedRGBs.splice(Math.floor(Math.random() * (matchedRGBs.length)), 1)
+  }
+  while (matchedRGBs.length < targetnum) {
+    matchedRGBs.push(RGBs[Math.floor(Math.random() * (RGBs.length))])
+  }
+  return matchedRGBs
+}
 
 function colordist(RGB1, RGB2) {
   var LAB1 = RGBtoLAB(RGB1)
@@ -148,9 +162,9 @@ function biasavgcolor(RGB1, RGB2, biastoone) {
   result.r += RGB2.r
   result.g += RGB2.g
   result.b += RGB2.b
-  result.r = Math.round(result.r / (biastoone+1))
-  result.g = Math.round(result.g / (biastoone+1))
-  result.b = Math.round(result.b / (biastoone+1))
+  result.r = Math.round(result.r / (biastoone + 1))
+  result.g = Math.round(result.g / (biastoone + 1))
+  result.b = Math.round(result.b / (biastoone + 1))
   return result
 }
 
@@ -158,8 +172,8 @@ function biasavgcolor(RGB1, RGB2, biastoone) {
 
 function testcolors(RGBscount) {
 
-  var bias = new RGBColor(000, 200, 200, 255)
-  var bstrength = 3
+  var bias = new RGBColor(200, 200, 000, 255)
+  var bstrength = 2
   var RGBslist = []
   for (var i = 0; i < RGBscount; i++) {
     var red = Math.round(Math.random() * 255)
@@ -213,9 +227,9 @@ function mostcolor(RGBs) {
 }
 
 function approach(LABs, xyz, step) {
-  var offsets = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1], [0, 1, 1], [1, 1, 0], [1, 0, 1], [1, 1, 1], [0, -1, -1], [-1, -1, 0], [-1, 0, -1], [-1, -1, -1]]
+  var offsets = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1], [0, 1, 1], [1, 1, 0], [1, 0, 1], [1, 1, 1], [0, -1, -1], [-1, -1, 0], [-1, 0, -1], [-1, -1, -1], [0, 0, 0]]
   var max = 0
-  resultxyz = [0, 0, 0]
+  resultxyz = JSON.parse(JSON.stringify(xyz));
   for (var i = 0; i < offsets.length; i++) {
     var x = xyz[0] + offsets[i][0] * step
     var y = xyz[1] + offsets[i][1] * step
@@ -299,9 +313,9 @@ function LABtoRGB(LAB) {
     b *= 12.92
   }
 
-  let rFinal = Math.round(r * 255);
-  let gFinal = Math.round(g * 255);
-  let bFinal = Math.round(b * 255);
+  let rFinal = Math.min(255,Math.max(Math.round(r * 255),0));
+  let gFinal = Math.min(255,Math.max(Math.round(g * 255),0));
+  let bFinal = Math.min(255,Math.max(Math.round(b * 255),0));
 
   return new RGBColor(rFinal, gFinal, bFinal, 255);
 }
