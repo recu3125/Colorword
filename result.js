@@ -8,15 +8,42 @@ class RGBColor {
 }
 const imagewh = 100
 function loaded() {
+  var selectedRGB = new RGBColor(0, 0, 0, 0)
+  var RGBs = []
+  RGBs = testcolors(imagewh * imagewh / 1)
+  //TODO 받아오기
+  var LABs = RGBs.map(x => RGBtoLAB(x))
+  var selectedLAB = RGBtoLAB(selectedRGB)
+  var percent = nearcount(LABs, selectedLAB[0], selectedLAB[1], selectedLAB[2], 20) //비슷한 선택을 한 사람 수
+  var mostcolor1 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
+  LABs = neardelete(LABs, RGBtoLAB(mostcolor1),40)
+  var mostcolor2 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
+  LABs = neardelete(LABs, RGBtoLAB(mostcolor2),40)
+  var mostcolor3 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
+  document.body.style.background = `linear-gradient(90deg, rgb(${mostcolor1.r}, ${mostcolor1.g}, ${mostcolor1.b}) 0%, rgb(${mostcolor2.r}, ${mostcolor2.g}, ${mostcolor2.b}) 50%, rgb(${mostcolor3.r}, ${mostcolor3.g}, ${mostcolor3.b}) 100%)`;
   setTimeout(() => {
-    makeimage()
+    RGBs = matchcolorscount(RGBs, imagewh * imagewh)//테스트케이스
+    makeimage(RGBs)
   }, 10);
 }
 
-function makeimage() {
+function nearestcolor(RGBs, RGB) {
+  var min = 10000000000000
+  var minval = false
+  for (var i = 0; i < RGBs.length; i++) {
+    var dist = colordist(RGBs[i], RGB)
+    if (dist < min) {
+      minval = RGBs[i]
+      min = dist
+    }
+  }
+  return minval
+}
+
+function makeimage(RGBs) {
   var canvas = document.getElementById('colorsort')
   var ctx = canvas.getContext('2d');
-  ctx.imageSmoothingEnabled = false;
+
 
 
   //pixels init
@@ -30,9 +57,8 @@ function makeimage() {
   }
 
 
-  var RGBs = matchcolorscount(testcolors(imagewh * imagewh/1000),imagewh * imagewh)
-  var mainRGB = LABtoRGB(mostcolor(RGBs))
-  console.log(mainRGB)
+  var LABs = RGBs.map(RGB => RGBtoLAB(RGB))
+  var mainRGB = LABtoRGB(mostcolor(LABs))
   pixels[imagewh / 2][imagewh / 2] = mainRGB
   RGBs.splice(0, 1)
   step()
@@ -46,7 +72,7 @@ function makeimage() {
         if (idealRGB == false) {
           continue;
         }
-        idealRGB = biasavgcolor(mainRGB, idealRGB, 70)
+        idealRGB = biasavgcolor(mainRGB, idealRGB, 0)
         var mindist = 10000000
         var minloc = 0
         for (var k = 0; k < RGBs.length; k++) {
@@ -59,7 +85,7 @@ function makeimage() {
         RGBs.splice(minloc, 1)
       }
     }
-    if(pixels[imagewh/2+1][imagewh/2]!=false&&pixels[imagewh/2-1][imagewh/2]!=false&&pixels[imagewh/2][imagewh/2+1]!=false&&pixels[imagewh/2][imagewh/2-1]!=false) pixels[imagewh/2][imagewh/2]=avgcolor([pixels[imagewh/2][imagewh/2+1],pixels[imagewh/2+1][imagewh/2],pixels[imagewh/2][imagewh/2-1],pixels[imagewh/2-1][imagewh/2]])
+    if (pixels[imagewh / 2 + 1][imagewh / 2] != false && pixels[imagewh / 2 - 1][imagewh / 2] != false && pixels[imagewh / 2][imagewh / 2 + 1] != false && pixels[imagewh / 2][imagewh / 2 - 1] != false) pixels[imagewh / 2][imagewh / 2] = avgcolor([pixels[imagewh / 2][imagewh / 2 + 1], pixels[imagewh / 2 + 1][imagewh / 2], pixels[imagewh / 2][imagewh / 2 - 1], pixels[imagewh / 2 - 1][imagewh / 2]])
     viewimage(pixels, ctx)
     if (RGBs.length > 0) {
       setTimeout(() => {
@@ -172,8 +198,8 @@ function biasavgcolor(RGB1, RGB2, biastoone) {
 
 function testcolors(RGBscount) {
 
-  var bias = new RGBColor(200, 200, 000, 255)
-  var bstrength = 2
+  var bias = new RGBColor(000, 100, 155, 255)
+  var bstrength = 1
   var RGBslist = []
   for (var i = 0; i < RGBscount; i++) {
     var red = Math.round(Math.random() * 255)
@@ -199,31 +225,42 @@ for (var i = 0; i < 256; i++) {
     cache[i][j] = new Array(256).fill(0)
   }
 }
-function mostcolor(RGBs) {
-  var LABs = RGBs.map(RGB => RGBtoLAB(RGB))
+function mostcolor(LABs) {
   maxpoint = [50, 0, 0]
   maxpoint = approach(LABs, maxpoint, 64)
   maxpoint = approach(LABs, maxpoint, 64)
-  console.log(maxpoint)
+  //console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 32)
   maxpoint = approach(LABs, maxpoint, 32)
-  console.log(maxpoint)
+//  console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 16)
   maxpoint = approach(LABs, maxpoint, 16)
-  console.log(maxpoint)
+  //console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 8)
   maxpoint = approach(LABs, maxpoint, 8)
-  console.log(maxpoint)
+  //console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 4)
   maxpoint = approach(LABs, maxpoint, 4)
-  console.log(maxpoint)
+  //console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 2)
   maxpoint = approach(LABs, maxpoint, 2)
-  console.log(maxpoint)
+  //console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 1)
   maxpoint = approach(LABs, maxpoint, 1)
-  console.log(maxpoint)
+  //console.log(maxpoint)
   return maxpoint
+}
+
+function neardelete(LABs, xyz, radius) {
+  var x = xyz[0], y = xyz[1], z = xyz[2]
+  for (var i = 0; i < LABs.length; i++) {
+    var dist = colordistlab(LABs[i], [x, y, z])
+    if (dist <= (radius * radius)) {
+      LABs.splice(i, 1)
+      i -= 1
+    }
+  }
+  return LABs
 }
 
 function approach(LABs, xyz, step) {
@@ -252,12 +289,6 @@ function nearcount(LABs, x, y, z, radius) {
     }
   }
   return count
-}
-
-function colorcountmatch(colors, target) {
-  while (colors.length < target) {
-    colors.map(x => colors)
-  }
 }
 
 function LABtoRGB(LAB) {
@@ -313,9 +344,9 @@ function LABtoRGB(LAB) {
     b *= 12.92
   }
 
-  let rFinal = Math.min(255,Math.max(Math.round(r * 255),0));
-  let gFinal = Math.min(255,Math.max(Math.round(g * 255),0));
-  let bFinal = Math.min(255,Math.max(Math.round(b * 255),0));
+  let rFinal = Math.min(255, Math.max(Math.round(r * 255), 0));
+  let gFinal = Math.min(255, Math.max(Math.round(g * 255), 0));
+  let bFinal = Math.min(255, Math.max(Math.round(b * 255), 0));
 
   return new RGBColor(rFinal, gFinal, bFinal, 255);
 }
