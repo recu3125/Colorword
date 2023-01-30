@@ -16,9 +16,9 @@ function loaded() {
   var selectedLAB = RGBtoLAB(selectedRGB)
   var percent = nearcount(LABs, selectedLAB[0], selectedLAB[1], selectedLAB[2], 20) //비슷한 선택을 한 사람 수
   var mostcolor1 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
-  LABs = neardelete(LABs, RGBtoLAB(mostcolor1),40)
+  LABs = neardelete(LABs, RGBtoLAB(mostcolor1), 40)
   var mostcolor2 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
-  LABs = neardelete(LABs, RGBtoLAB(mostcolor2),40)
+  LABs = neardelete(LABs, RGBtoLAB(mostcolor2), 40)
   var mostcolor3 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
   document.body.style.background = `linear-gradient(90deg, rgb(${mostcolor1.r}, ${mostcolor1.g}, ${mostcolor1.b}) 0%, rgb(${mostcolor2.r}, ${mostcolor2.g}, ${mostcolor2.b}) 50%, rgb(${mostcolor3.r}, ${mostcolor3.g}, ${mostcolor3.b}) 100%)`;
   setTimeout(() => {
@@ -138,18 +138,6 @@ function colordistlab(LAB1, LAB2) {
 
 function aroundcolor(pixels, prepixels, i, j) {
   var RGBlist = []
-  // var aroundlist = [
-  //   [-1, -1], [-1, 0], [-1, 1],
-  //    [0, -1],           [0, 1],
-  //    [1, -1],  [1, 0],  [1, 1]
-  // ]
-  // var aroundlist2 = [
-  //   [-2, -2], [-2, -1], [-2, 0], [-2, 1], [-2, 2],
-  //   [-1, -2],                             [-1, 2],
-  //    [0, -2],                              [0, 2], 
-  //    [1, -2],                              [1, 2],  
-  //    [2, -2],  [2, -1],  [2, 0],  [2, 1],  [2, 2]  
-  // ]
   var aroundlist = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
   for (var k = 0; k < aroundlist.length; k++) {
     var x = i + aroundlist[k][0]
@@ -221,7 +209,7 @@ function testcolors(RGBscount) {
 var cache = new Array(256)
 for (var i = 0; i < 256; i++) {
   cache[i] = new Array(256)
-  for (j = 0; j < 256; j++) {
+  for (var j = 0; j < 256; j++) {
     cache[i][j] = new Array(256).fill(0)
   }
 }
@@ -232,7 +220,7 @@ function mostcolor(LABs) {
   //console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 32)
   maxpoint = approach(LABs, maxpoint, 32)
-//  console.log(maxpoint)
+  //  console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 16)
   maxpoint = approach(LABs, maxpoint, 16)
   //console.log(maxpoint)

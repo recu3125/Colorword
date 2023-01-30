@@ -57,7 +57,7 @@ document.addEventListener('mousemove', (event) => {
       let colorAtMouse = sbCtx.getImageData(sbMouseX, sbMouseY, 1, 1).data;
       let color = 'rgb(' + colorAtMouse[0] + ',' + colorAtMouse[1] + ',' + colorAtMouse[2] + ')';
       if (color != "rgb(0,0,0)") {
-        document.getElementById("colorviewer").style.backgroundColor=color
+        document.getElementById("colorviewer").style.backgroundColor = color
       }
     }
     if (clickedInH) {
@@ -91,7 +91,7 @@ document.addEventListener('mousedown', (event) => {
     let colorAtMouse = sbCtx.getImageData(sbMouseX, sbMouseY, 1, 1).data;
     let color = 'rgb(' + colorAtMouse[0] + ',' + colorAtMouse[1] + ',' + colorAtMouse[2] + ')';
     if (color != "rgb(0,0,0)") {
-      document.getElementById("colorviewer").style.backgroundColor=color
+      document.getElementById("colorviewer").style.backgroundColor = color
     }
   }
   if (clickedInH) {
@@ -102,5 +102,9 @@ document.addEventListener('mousedown', (event) => {
   }
   mouseDown = true
 });
+
+// userAgent 보내고 단어뜻받아오기
+
+console.log(navigator.userAgent)
 
 //버튼 눌리면 전송+결과 리다이렉트
