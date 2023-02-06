@@ -72,7 +72,7 @@ function makeimage(RGBs) {
         if (idealRGB == false) {
           continue;
         }
-        idealRGB = biasavgcolor(mainRGB, idealRGB, 0)
+        idealRGB = biasavgcolor(mainRGB, idealRGB, 50)
         var mindist = 10000000
         var minloc = 0
         for (var k = 0; k < RGBs.length; k++) {
@@ -217,25 +217,18 @@ function mostcolor(LABs) {
   maxpoint = [50, 0, 0]
   maxpoint = approach(LABs, maxpoint, 64)
   maxpoint = approach(LABs, maxpoint, 64)
-  //console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 32)
   maxpoint = approach(LABs, maxpoint, 32)
-  //  console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 16)
   maxpoint = approach(LABs, maxpoint, 16)
-  //console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 8)
   maxpoint = approach(LABs, maxpoint, 8)
-  //console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 4)
   maxpoint = approach(LABs, maxpoint, 4)
-  //console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 2)
   maxpoint = approach(LABs, maxpoint, 2)
-  //console.log(maxpoint)
   maxpoint = approach(LABs, maxpoint, 1)
   maxpoint = approach(LABs, maxpoint, 1)
-  //console.log(maxpoint)
   return maxpoint
 }
 
