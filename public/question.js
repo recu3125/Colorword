@@ -28,7 +28,6 @@ function sbCanvasChange(hueselected) {
   sbCtx.fillStyle = brightnessGradient;
   sbCtx.fillRect(0, 0, sbCtx.canvas.width, sbCtx.canvas.height);
 }
-
 var mouseDown = false
 var clickedInH = false
 var clickedInSb = false
