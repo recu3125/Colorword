@@ -3,8 +3,8 @@
 <br>
 <br>Do you know what synesthesia is?
 <br>Rarely, there are people who can see colors in letters.
-<br>It's fascinating for me who doesn't, but even ordinary people can associate some colors from words.
-<br>And in my experience, those colors tend to be word-by-word-specific. People don't associate random colors!
+<br>It's amazing, but even ordinary people (like me) can associate some colors from words.
+<br>And in my experience, those colors have a tendency. People don't associate random colors!
 <br>For example, if you ask what color comes to mind from the word "intelligence", many people will answer blue-like colors.
 <br>You thought the same thing? No? Aren't you curious about what colors other people usually think of?
 <br>
