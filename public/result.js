@@ -186,7 +186,7 @@ function biasavgcolor(RGB1, RGB2, biastoone) {
 
 function testcolors(RGBscount) {
 
-  var bias = new RGBColor(000, 100, 155, 255)
+  var bias = new RGBColor(0, 100, 155, 255)
   var bstrength = 1
   var RGBslist = []
   for (var i = 0; i < RGBscount; i++) {

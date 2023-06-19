@@ -2,6 +2,21 @@ const express = require("express");
 const path = require("path");
 const app = express();
 const apiRoutes = require('./routes/api');
+const mongoose = require('mongoose');
+
+mongoose.connect(`mongodb://127.0.0.1:27017/colorword`, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected successfully to MongoDB server');
+
+    // Start using Mongoose models and perform database operations
+    // ...
+
+    // Close the connection
+    mongoose.connection.close();
+  })
+  .catch((err) => {
+    console.error('Failed to connect to MongoDB server:', err);
+  });
 
 //단어목록 바꾸기 (math같은거포함)
 const words = ['Be', 'Have', 'Do', 'Say', 'Go', 'Get', 'Make', 'Know', 'Take', 'See', 'Come', 'Think', 'Look', 'Want', 'Give', 'Use', 'Find', 'Tell', 'Ask', 'Work', 'Good', 'New', 'First', 'Last', 'Long', 'Great', 'Little', 'Own', 'Other', 'Old', 'Right', 'Big', 'High', 'Different', 'Small', 'Large', 'Next', 'Early', 'Young', 'Important', 'Up', 'So', 'Out', 'Just', 'Now', 'How', 'Then', 'More', 'Also', 'Here', 'Well', 'Only', 'Very', 'Even', 'Back', 'There', 'Still', 'Down', 'Too', 'Why', 'Beauty', 'Happiness', 'Knowledge', 'Love', 'Power', 'Success', 'Wisdom', 'Freedom', 'Justice', 'Courage', 'Truth', 'Equality', 'Kindness', 'Understanding', 'Creativity', 'Patience', 'Respect', 'Peace', 'Imagination']
