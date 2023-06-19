@@ -7,12 +7,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="./result.js"></script>
+  <style>
+    canvas {
+      width: 200px;
+      height: 200px;
+      background-color: [selected-color];
+    }
+    #color-name {
+        font-size: 3vw;
+        font-weight: bold;
+        margin-top: 2%;
+      }
+      #popular-colors {
+        height: 100%;
+        margin-top: 2%;
+      }
+      .popular-color {
+        display: inline-block;
+        width: 10%;
+        height: 10%;
+        margin-right: 2%;
+        border: 1px solid black;
+      }
+      .popular-color-name {
+        font-size: 1.5vw;
+        margin-top: 1%;
+      }
+  </style>
 </head>
 
 <body style="margin: 0px;" onload="loaded()">
-  <center>
-    <canvas id="colorsort" width="500px" height="500px"></canvas>
-  </center>
+  <canvas id="colorsort" width="100px" height="100px"></canvas>
+  <div id="color-name">asdf1</div>
+  <div id="popular-colors">
+    <div class="popular-color" style="background-color: #11ff12"></div>
+    <div class="popular-color-name">asdf2</div>
+    <div class="popular-color" style="background-color: #1199ff"></div>
+    <div class="popular-color-name">asdf3</div>
+    <div class="popular-color" style="background-color: #882132"></div>
+    <div class="popular-color-name">asdf4</div>
+  </div>
+  <button style="width: 80%; height: 80%; margin: auto; text-align: center;" onclick="location.href='/'">다음으루넘어가는버튼</button>
 </body>
 
 </html>

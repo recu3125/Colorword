@@ -1,5 +1,21 @@
+function extractRGB(rgbColor) {
+  var rgbValues = rgbColor.substring(rgbColor.indexOf("(") + 1, rgbColor.indexOf(")")).split(", ");
+  var red = parseInt(rgbValues[0]);
+  var green = parseInt(rgbValues[1]);
+  var blue = parseInt(rgbValues[2]);
+
+  return {
+    r: red,
+    g: green,
+    b: blue
+  };
+}
+
 var hCanvas = document.getElementById("h")
 var hCtx = hCanvas.getContext('2d');
+hCanvas.width = hCanvas.clientWidth;
+hCanvas.height = hCanvas.clientHeight;
+hCtx.setTransform(1, 0, 0, 1, 0, 0);
 var hueGradient = hCtx.createLinearGradient(0, 0, hCtx.canvas.width, 0);
 hueGradient.addColorStop(0, 'rgb(255, 0, 0)');
 hueGradient.addColorStop(0.15, 'rgb(255, 0, 255)');
@@ -13,6 +29,9 @@ hCtx.fillRect(0, 0, hCtx.canvas.width, hCtx.canvas.height);
 
 var sbCanvas = document.getElementById("sb")
 var sbCtx = sbCanvas.getContext('2d');
+sbCanvas.width = sbCanvas.clientWidth;
+sbCanvas.height = sbCanvas.clientHeight;
+sbCtx.setTransform(1, 0, 0, 1, 0, 0);
 sbCanvasChange('rgb(255,0,0)')
 function sbCanvasChange(hueselected) {
   sbCtx.fillStyle = hueselected
@@ -73,6 +92,7 @@ document.addEventListener('mouseup', (event) => {
   clickedInH = false
   clickedInSb = false
 });
+
 document.addEventListener('mousedown', (event) => {
   if (hIn) {
     clickedInH = true
@@ -107,3 +127,31 @@ document.addEventListener('mousedown', (event) => {
 console.log(navigator.userAgent)
 
 //버튼 눌리면 전송+결과 리다이렉트
+var button = document.getElementById("submit");
+
+// Attach a click event listener to the button
+button.addEventListener("click", function () {
+  const { r, g, b } = extractRGB(document.getElementById("colorviewer").style.backgroundColor)
+  fetch('/api/rgb', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ r, g, b }),
+  })
+    .then((response) => {
+      if (response.ok) {
+        // RGB data submitted successfully
+        return response.json();
+      } else {
+        throw new Error('Error submitting RGB data');
+      }
+    })
+    .then((data) => {
+      console.log(data.message);
+    })
+    .catch((error) => {
+      console.log('An error occurred:', error);
+    });
+    location.href='/result'+'?r='+r+'?g='+g+'?b='+b
+});
