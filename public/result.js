@@ -42,7 +42,8 @@ async function getRGBs() {
 
 const imagewh = 100
 async function loaded() {
-  var selectedRGB = new RGBColor(0, 0, 0, 0)
+  const { word, r, g, b } = parseurl()
+  var selectedRGB = new RGBColor(r,g,b,255)
   var RGBs = await getRGBs()
   var LABs = RGBs.map(x => RGBtoLAB(x))
   var selectedLAB = RGBtoLAB(selectedRGB)
