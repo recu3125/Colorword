@@ -122,7 +122,12 @@ document.addEventListener('mousedown', (event) => {
   mouseDown = true
 });
 
-// userAgent 보내고 단어뜻받아오기
+//단어배정
+const words = ['Love', 'Harmony', 'Energy', 'Passion', 'Creativity', 'Confidence', 'Joy', 'Wisdom', 'Curiosity', 'Power', 'Balance', 'Growth', 'Happiness', 'Hope', 'Ambition', 'Peace', 'Vibrant', 'Bold', 'Calm', 'Brilliant', 'Illuminating', 'Enchanting', 'Soothing', 'Dynamic', 'Uplifting']
+const meanings = ['Deep affection and care.', 'State of peaceful coexistence.', 'Capacity for work or action.', 'Strong and intense emotion.', 'Ability to produce original ideas.', 'Belief in oneself and abilities.', 'Intense feeling of happiness.', 'Deep knowledge and understanding.', 'Desire to learn or explore.', 'Ability to exert influence or control.', 'State of equilibrium or stability.', 'Process of development and increase.', 'State of being happy and content.', 'Optimistic expectation or desire.', 'Strong desire for achievement or success.', 'State of tranquility and harmony.', 'Full of energy and vitality.', 'Fearless and daring in action.', 'Peaceful and undisturbed.', 'Exceptionally bright or intelligent.', 'Providing light or insight.', 'Captivating or charming.', 'Calming and comforting.', 'Energetic and active.', 'Inspiring and elevating.']
+wordnum = Math.floor(Math.random()*words.length)
+document.getElementById('word').textContent=words[wordnum]
+document.getElementById('meaning').textContent=' - '+meanings[wordnum]
 
 console.log(navigator.userAgent)
 
@@ -132,12 +137,12 @@ var button = document.getElementById("submit");
 // Attach a click event listener to the button
 button.addEventListener("click", function () {
   const { r, g, b } = extractRGB(document.getElementById("colorviewer").style.backgroundColor)
-  fetch('/api/rgb', {
+  fetch('/api/submitcolor', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ r, g, b }),
+    body: JSON.stringify([words[wordnum],{ r, g, b }]),
   })
     .then((response) => {
       if (response.ok) {
@@ -153,5 +158,5 @@ button.addEventListener("click", function () {
     .catch((error) => {
       console.log('An error occurred:', error);
     });
-    location.href='/result'+'?r='+r+'?g='+g+'?b='+b
+    location.href='/result'+'?word='+document.getElementById('word').textContent+'&r='+r+'&g='+g+'&b='+b
 });

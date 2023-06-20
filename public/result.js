@@ -6,12 +6,44 @@ class RGBColor {
     this.a = a
   }
 }
+
+function parseurl() {
+  var currentURL = window.location.href;
+  var searchParams = new URLSearchParams(window.location.search);
+  var word = searchParams.get("word");
+  var r = searchParams.get("r");
+  var g = searchParams.get("g");
+  var b = searchParams.get("b");
+  return { word, r, g, b }
+}
+
+
+async function getRGBs() {
+  const { word, r, g, b } = parseurl()
+  return fetch('/api/colors?word=' + word)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Request failed with status ' + response.status);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const colorsData = JSON.parse(data);
+      const colors = colorsData.map(colorData => {
+        const { r, g, b } = colorData;
+        return new RGBColor(parseInt(r), parseInt(g), parseInt(b), 255); // Assuming the "a" value is set to 1 for all colors
+      });
+      return colors
+    })
+    .catch((error) => {
+      console.log('An error occurred:', error);
+    });
+}
+
 const imagewh = 100
-function loaded() {
+async function loaded() {
   var selectedRGB = new RGBColor(0, 0, 0, 0)
-  var RGBs = []
-  RGBs = testcolors(imagewh * imagewh / 1)
-  //TODO 받아오기
+  var RGBs = await getRGBs()
   var LABs = RGBs.map(x => RGBtoLAB(x))
   var selectedLAB = RGBtoLAB(selectedRGB)
   var percent = nearcount(LABs, selectedLAB[0], selectedLAB[1], selectedLAB[2], 20) //비슷한 선택을 한 사람 수
@@ -21,10 +53,9 @@ function loaded() {
   LABs = neardelete(LABs, RGBtoLAB(mostcolor2), 40)
   var mostcolor3 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
   document.body.style.background = `linear-gradient(90deg, rgb(${mostcolor1.r}, ${mostcolor1.g}, ${mostcolor1.b}) 0%, rgb(${mostcolor2.r}, ${mostcolor2.g}, ${mostcolor2.b}) 50%, rgb(${mostcolor3.r}, ${mostcolor3.g}, ${mostcolor3.b}) 100%)`;
-  setTimeout(() => {
-    RGBs = matchcolorscount(RGBs, imagewh * imagewh)//테스트케이스
-    makeimage(RGBs)
-  }, 10);
+  matchcolorscount(RGBs, imagewh * imagewh).then(matchedRGBs => {
+    makeimage(matchedRGBs)
+  })
 }
 
 function nearestcolor(RGBs, RGB) {
@@ -114,7 +145,7 @@ function viewimage(pixels, ctx) {
 }
 
 
-function matchcolorscount(RGBs, targetnum) {
+async function matchcolorscount(RGBs, targetnum) {
   var matchedRGBs = JSON.parse(JSON.stringify(RGBs));
   while (matchedRGBs.length > targetnum) {
     matchedRGBs.splice(Math.floor(Math.random() * (matchedRGBs.length)), 1)
