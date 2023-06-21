@@ -15,9 +15,9 @@ const colorwordSchema = new mongoose.Schema({
   },
   meaning: String,
   colors: [{
-    r: String,
-    g: String,
-    b: String
+    r: Number,
+    g: Number,
+    b: Number
   }]
 });
 
