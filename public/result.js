@@ -11,15 +11,30 @@ function parseurl() {
   var currentURL = window.location.href;
   var searchParams = new URLSearchParams(window.location.search);
   var word = searchParams.get("word");
+  var meaning = searchParams.get("meaning");
   var r = searchParams.get("r");
   var g = searchParams.get("g");
   var b = searchParams.get("b");
-  return { word, r, g, b }
+  return { word,meaning, r, g, b }
 }
 
+async function identifyColor(RGB) {
+  let closestColor = null;
+  let minDistance = Infinity;
+  
+  const colors = await(await fetch('/colors.json')).json()
+  for (const color of colors) {
+    const distance = colordist(RGB, color.rgb);
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestColor = color.name;
+    }
+  }
+  return closestColor || 'unknown';
+}
 
 async function getRGBs() {
-  const { word, r, g, b } = parseurl()
+  const { word, meaning, r, g, b } = parseurl()
   return fetch('/api/colors?word=' + word)
     .then((response) => {
       if (!response.ok) {
@@ -42,7 +57,7 @@ async function getRGBs() {
 
 const imagewh = 100
 async function loaded() {
-  const { word, r, g, b } = parseurl()
+  const { word, meaning, r, g, b } = parseurl()
   var selectedRGB = new RGBColor(r, g, b, 255)
   var RGBs = await getRGBs()
   var LABs = await RGBs.map(x => RGBtoLAB(x))
@@ -79,13 +94,22 @@ async function loaded() {
   document.getElementById("sel1").style.backgroundColor = `rgb(${mostcolor1.r}, ${mostcolor1.g}, ${mostcolor1.b})`
   document.getElementById("sel2").style.backgroundColor = `rgb(${mostcolor2.r}, ${mostcolor2.g}, ${mostcolor2.b})`
   document.getElementById("sel3").style.backgroundColor = `rgb(${mostcolor3.r}, ${mostcolor3.g}, ${mostcolor3.b})`
+  
+  document.getElementById("name0").textContent = await identifyColor(selectedRGB)
+  document.getElementById("name1").textContent = await identifyColor(mostcolor1)
+  document.getElementById("name2").textContent = await identifyColor(mostcolor2)
+  document.getElementById("name3").textContent = await identifyColor(mostcolor3)
+  
+  document.getElementById("word").textContent = word
+  document.getElementById("meaning").textContent = meaning
+
   matchcolorscount(RGBs, imagewh * imagewh).then(matchedRGBs => {
     makeimage(matchedRGBs)
   })
 }
 
 function nearestcolor(RGBs, RGB) {
-  var min = 10000000000000
+  var min = Infinity
   var minval = false
   for (var i = 0; i < RGBs.length; i++) {
     var dist = colordist(RGBs[i], RGB)

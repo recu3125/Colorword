@@ -158,5 +158,5 @@ button.addEventListener("click", function () {
     .catch((error) => {
       console.log('An error occurred:', error);
     });
-    location.href='/result'+'?word='+document.getElementById('word').textContent+'&r='+r+'&g='+g+'&b='+b
+    location.href='/result'+'?word='+document.getElementById('word').textContent+'&meaning='+document.getElementById('meaning').textContent+'&r='+r+'&g='+g+'&b='+b
 });
