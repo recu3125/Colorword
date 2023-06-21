@@ -43,17 +43,42 @@ async function getRGBs() {
 const imagewh = 100
 async function loaded() {
   const { word, r, g, b } = parseurl()
-  var selectedRGB = new RGBColor(r,g,b,255)
+  var selectedRGB = new RGBColor(r, g, b, 255)
   var RGBs = await getRGBs()
-  var LABs = RGBs.map(x => RGBtoLAB(x))
+  var LABs = await RGBs.map(x => RGBtoLAB(x))
   var selectedLAB = RGBtoLAB(selectedRGB)
-  var percent = nearcount(LABs, selectedLAB[0], selectedLAB[1], selectedLAB[2], 20) //비슷한 선택을 한 사람 수
+  //var percent = nearcount(LABs, selectedLAB[0], selectedLAB[1], selectedLAB[2], 20) //비슷한 선택을 한 사람 수
   var mostcolor1 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
-  LABs = neardelete(LABs, RGBtoLAB(mostcolor1), 40)
-  var mostcolor2 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
-  LABs = neardelete(LABs, RGBtoLAB(mostcolor2), 40)
-  var mostcolor3 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
-  document.body.style.background = `linear-gradient(90deg, rgb(${mostcolor1.r}, ${mostcolor1.g}, ${mostcolor1.b}) 0%, rgb(${mostcolor2.r}, ${mostcolor2.g}, ${mostcolor2.b}) 50%, rgb(${mostcolor3.r}, ${mostcolor3.g}, ${mostcolor3.b}) 100%)`;
+  if (LABs.length >= 3) {
+    var delradius = 40
+    while (neardelete(LABs, RGBtoLAB(mostcolor1), delradius).length < 2) {
+      delradius > 2 ? delradius /= 2 : delradius = 0
+    }
+    LABs = neardelete(LABs, RGBtoLAB(mostcolor1), delradius)
+    var mostcolor2 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
+  }
+  else {
+    mostcolor2 = mostcolor1
+  }
+  if (LABs.length >= 2) {
+
+    var delradius = 40
+    while (neardelete(LABs, RGBtoLAB(mostcolor1), delradius).length < 1) {
+      delradius > 2 ? delradius /= 2 : delradius = 0
+    }
+    LABs = neardelete(LABs, RGBtoLAB(mostcolor1), delradius) //TODOTODOTODOTODOTODOTODO thirdmost가 좀 이상함
+    console.log(LABs)
+    console.log(mostcolor(LABs))
+    console.log(LABtoRGB(mostcolor(LABs)))
+    var mostcolor3 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
+  }
+  else {
+    mostcolor3 = mostcolor2
+  }
+  document.getElementById("sel0").style.backgroundColor = `rgb(${selectedRGB.r}, ${selectedRGB.g}, ${selectedRGB.b})`
+  document.getElementById("sel1").style.backgroundColor = `rgb(${mostcolor1.r}, ${mostcolor1.g}, ${mostcolor1.b})`
+  document.getElementById("sel2").style.backgroundColor = `rgb(${mostcolor2.r}, ${mostcolor2.g}, ${mostcolor2.b})`
+  document.getElementById("sel3").style.backgroundColor = `rgb(${mostcolor3.r}, ${mostcolor3.g}, ${mostcolor3.b})`
   matchcolorscount(RGBs, imagewh * imagewh).then(matchedRGBs => {
     makeimage(matchedRGBs)
   })
@@ -265,15 +290,17 @@ function mostcolor(LABs) {
 }
 
 function neardelete(LABs, xyz, radius) {
-  var x = xyz[0], y = xyz[1], z = xyz[2]
+  var x = xyz[0], y = xyz[1], z = xyz[2];
+  var filteredLABs = [];
+
   for (var i = 0; i < LABs.length; i++) {
-    var dist = colordistlab(LABs[i], [x, y, z])
-    if (dist <= (radius * radius)) {
-      LABs.splice(i, 1)
-      i -= 1
+    var dist = colordistlab(LABs[i], [x, y, z]);
+    if (dist > (radius * radius)) {
+      filteredLABs.push(LABs[i]);
     }
   }
-  return LABs
+
+  return filteredLABs;
 }
 
 function approach(LABs, xyz, step) {

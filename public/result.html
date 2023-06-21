@@ -8,46 +8,136 @@
   <title>Document</title>
   <script src="./result.js"></script>
   <style>
-    canvas {
-      width: 200px;
-      height: 200px;
-      background-color: [selected-color];
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
-    #color-name {
-        font-size: 3vw;
-        font-weight: bold;
-        margin-top: 2%;
-      }
-      #popular-colors {
-        height: 100%;
-        margin-top: 2%;
-      }
-      .popular-color {
-        display: inline-block;
-        width: 10%;
-        height: 10%;
-        margin-right: 2%;
-        border: 1px solid black;
-      }
-      .popular-color-name {
-        font-size: 1.5vw;
-        margin-top: 1%;
-      }
+
+    #colorsort {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border: 1px solid #ccc;
+      width: 500px;
+      height: 500px;
+      margin-right: 20px;
+    }
+
+    .container {
+      display: block;
+      margin: 20px;
+      margin-left: auto;
+      margin-right: auto;
+      display: flex;
+      flex-wrap: wrap;
+      width: fit-content;
+    }
+
+    .word-section {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 20px;
+      font-size: 45px;
+    }
+
+    .meaning-section {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 20px;
+      font-size: 35px;
+      color: #444444;
+    }
+
+    h2 {
+      margin: 0;
+    }
+
+    .color-label {
+      font-weight: bold;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+
+    .color-viewer-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .color-viewer {
+      width: 120px;
+      height: 80px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+    }
+
+    .color-name {
+      font-size: 14px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 30px;
+      margin-right: 20px;
+    }
+
+    .button-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+    }
   </style>
 </head>
 
 <body style="margin: 0px;" onload="loaded()">
-  <canvas id="colorsort" width="100px" height="100px"></canvas>
-  <div id="color-name">asdf1</div>
-  <div id="popular-colors">
-    <div class="popular-color" style="background-color: #11ff12"></div>
-    <div class="popular-color-name">asdf2</div>
-    <div class="popular-color" style="background-color: #1199ff"></div>
-    <div class="popular-color-name">asdf3</div>
-    <div class="popular-color" style="background-color: #882132"></div>
-    <div class="popular-color-name">asdf4</div>
+  <div style="margin:50px;margin-left: auto; margin-right:auto;">
+    <div class="word-section">
+      <h2 id="word">Word</h2>
+    </div>
+    <div class="meaning-section">
+      <h2 id="meaning">Meaning</h2>
+    </div>
+    <div class="container">
+      <div>
+        <canvas id="colorsort" width="100px" height="100px"></canvas>
+      </div>
+      <div>
+        <div class="color-label">Color You Selected</div>
+        <div class="color-viewer-container">
+          <div id="sel0" class="color-viewer"></div>
+          <div id="name0" class="color-name">Most Selected</div>
+        </div>
+
+        <div class="color-label">Most Selected Color</div>
+        <div class="color-viewer-container">
+          <div id="sel1" class="color-viewer"></div>
+          <div id="name1" class="color-name">Most Selected</div>
+        </div>
+
+        <div class="color-label">Second Most Selected Color</div>
+        <div class="color-viewer-container">
+          <div id="sel2" class="color-viewer"></div>
+          <div id="name2" class="color-name">Second Most Selected</div>
+        </div>
+
+        <div class="color-label">Third Most Selected</div>
+        <div class="color-viewer-container">
+          <div id="sel3" class="color-viewer"></div>
+          <div id="name3" class="color-name">Third Most Selected Color</div>
+        </div>
+      </div>
+    </div>
   </div>
-  <button style="width: 80%; height: 80%; margin: auto; text-align: center;" onclick="location.href='/'">다음으루넘어가는버튼</button>
+
+  <div class="button-container">
+    <button id="continueButton" onclick="location.href='/question'">Continue</button>
+    <button id="homeButton" onclick="location.href='/'">Home</button>
+  </div>
 </body>
 
 </html>
