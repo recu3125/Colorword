@@ -15,14 +15,14 @@ function parseurl() {
   var r = searchParams.get("r");
   var g = searchParams.get("g");
   var b = searchParams.get("b");
-  return { word,meaning, r, g, b }
+  return { word, meaning, r, g, b }
 }
 
 async function identifyColor(RGB) {
   let closestColor = null;
   let minDistance = Infinity;
-  
-  const colors = await(await fetch('/colors.json')).json()
+
+  const colors = await (await fetch('/colors.json')).json()
   for (const color of colors) {
     const distance = colordist(RGB, color.rgb);
     if (distance < minDistance) {
@@ -60,31 +60,31 @@ async function loaded() {
   const { word, meaning, r, g, b } = parseurl()
   var selectedRGB = new RGBColor(r, g, b, 255)
   var RGBs = await getRGBs()
+  RGBs = await matchcolorscount(RGBs, imagewh * imagewh)
   var LABs = await RGBs.map(x => RGBtoLAB(x))
   var selectedLAB = RGBtoLAB(selectedRGB)
   //var percent = nearcount(LABs, selectedLAB[0], selectedLAB[1], selectedLAB[2], 20) //비슷한 선택을 한 사람 수
+
+  //mostcolor
   var mostcolor1 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
+  const delradiusarray = [15, 10, 5, 2, 0]
   if (LABs.length >= 3) {
-    var delradius = 40
-    while (neardelete(LABs, RGBtoLAB(mostcolor1), delradius).length < 2) {
-      delradius > 2 ? delradius /= 2 : delradius = 0
+    var delradiusindex = 0
+    while (neardelete(LABs, RGBtoLAB(mostcolor1), delradiusarray[delradiusindex]).length < 2) {
+      delradiusindex += 1
     }
-    LABs = neardelete(LABs, RGBtoLAB(mostcolor1), delradius)
+    LABs = neardelete(LABs, RGBtoLAB(mostcolor1), delradiusarray[delradiusindex])
     var mostcolor2 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
   }
   else {
     mostcolor2 = mostcolor1
   }
   if (LABs.length >= 2) {
-
-    var delradius = 40
-    while (neardelete(LABs, RGBtoLAB(mostcolor1), delradius).length < 1) {
-      delradius > 2 ? delradius /= 2 : delradius = 0
+    var delradiusindex = 0
+    while (neardelete(LABs, RGBtoLAB(mostcolor2), delradiusarray[delradiusindex]).length < 1) {
+      delradiusindex += 1
     }
-    LABs = neardelete(LABs, RGBtoLAB(mostcolor1), delradius) //TODOTODOTODOTODOTODOTODO thirdmost가 좀 이상함
-    console.log(LABs)
-    console.log(mostcolor(LABs))
-    console.log(LABtoRGB(mostcolor(LABs)))
+    LABs = neardelete(LABs, RGBtoLAB(mostcolor2), delradiusarray[delradiusindex])
     var mostcolor3 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
   }
   else {
@@ -94,18 +94,16 @@ async function loaded() {
   document.getElementById("sel1").style.backgroundColor = `rgb(${mostcolor1.r}, ${mostcolor1.g}, ${mostcolor1.b})`
   document.getElementById("sel2").style.backgroundColor = `rgb(${mostcolor2.r}, ${mostcolor2.g}, ${mostcolor2.b})`
   document.getElementById("sel3").style.backgroundColor = `rgb(${mostcolor3.r}, ${mostcolor3.g}, ${mostcolor3.b})`
-  
+
   document.getElementById("name0").textContent = await identifyColor(selectedRGB)
   document.getElementById("name1").textContent = await identifyColor(mostcolor1)
   document.getElementById("name2").textContent = await identifyColor(mostcolor2)
   document.getElementById("name3").textContent = await identifyColor(mostcolor3)
-  
+
   document.getElementById("word").textContent = word
   document.getElementById("meaning").textContent = meaning
 
-  matchcolorscount(RGBs, imagewh * imagewh).then(matchedRGBs => {
-    makeimage(matchedRGBs)
-  })
+  makeimage(RGBs)
 }
 
 function nearestcolor(RGBs, RGB) {
@@ -125,8 +123,6 @@ function makeimage(RGBs) {
   var canvas = document.getElementById('colorsort')
   var ctx = canvas.getContext('2d');
 
-
-
   //pixels init
   var pixels = []
   for (var i = 0; i < imagewh; i++) {
@@ -137,14 +133,12 @@ function makeimage(RGBs) {
     pixels.push(row)
   }
 
-
   var LABs = RGBs.map(RGB => RGBtoLAB(RGB))
   var mainRGB = LABtoRGB(mostcolor(LABs))
   pixels[imagewh / 2][imagewh / 2] = mainRGB
   RGBs.splice(0, 1)
   step()
   function step() {
-    console.log(`${imagewh * imagewh - RGBs.length} / ${imagewh * imagewh}`)
     var prepixels = JSON.parse(JSON.stringify(pixels));
     for (var i = 0; i < imagewh; i++) {
       for (var j = 0; j < imagewh; j++) {
@@ -175,7 +169,6 @@ function makeimage(RGBs) {
     }
   }
 
-
 }
 
 function viewimage(pixels, ctx) {
@@ -194,16 +187,22 @@ function viewimage(pixels, ctx) {
   ctx.putImageData(img, 0, 0);
 }
 
-
 async function matchcolorscount(RGBs, targetnum) {
   var matchedRGBs = JSON.parse(JSON.stringify(RGBs));
   while (matchedRGBs.length > targetnum) {
     matchedRGBs.splice(Math.floor(Math.random() * (matchedRGBs.length)), 1)
   }
   while (matchedRGBs.length < targetnum) {
-    matchedRGBs.push(RGBs[Math.floor(Math.random() * (RGBs.length))])
+    matchedRGBs.push(RGBnoise(RGBs[Math.floor(Math.random() * (RGBs.length))]))
   }
   return matchedRGBs
+}
+
+function RGBnoise(RGB) {
+  var r = Math.min(Math.max(0, RGB.r + Math.floor(Math.random() * 20 - 10)), 255)
+  var g = Math.min(Math.max(0, RGB.g + Math.floor(Math.random() * 20 - 10)), 255)
+  var b = Math.min(Math.max(0, RGB.b + Math.floor(Math.random() * 20 - 10)), 255)
+  return new RGBColor(r, g, b, RGB.a)
 }
 
 function colordist(RGB1, RGB2) {
@@ -263,8 +262,6 @@ function biasavgcolor(RGB1, RGB2, biastoone) {
   return result
 }
 
-
-
 function testcolors(RGBscount) {
 
   var bias = new RGBColor(0, 100, 155, 255)
@@ -296,20 +293,12 @@ for (var i = 0; i < 256; i++) {
 }
 function mostcolor(LABs) {
   maxpoint = [50, 0, 0]
-  maxpoint = approach(LABs, maxpoint, 64)
-  maxpoint = approach(LABs, maxpoint, 64)
-  maxpoint = approach(LABs, maxpoint, 32)
-  maxpoint = approach(LABs, maxpoint, 32)
-  maxpoint = approach(LABs, maxpoint, 16)
-  maxpoint = approach(LABs, maxpoint, 16)
-  maxpoint = approach(LABs, maxpoint, 8)
-  maxpoint = approach(LABs, maxpoint, 8)
-  maxpoint = approach(LABs, maxpoint, 4)
-  maxpoint = approach(LABs, maxpoint, 4)
-  maxpoint = approach(LABs, maxpoint, 2)
-  maxpoint = approach(LABs, maxpoint, 2)
-  maxpoint = approach(LABs, maxpoint, 1)
-  maxpoint = approach(LABs, maxpoint, 1)
+  maxpoint = approach(LABs, maxpoint, 32, 3)
+  maxpoint = approach(LABs, maxpoint, 16, 2)
+  maxpoint = approach(LABs, maxpoint, 8, 1)
+  maxpoint = approach(LABs, maxpoint, 4, 1)
+  maxpoint = approach(LABs, maxpoint, 2, 1)
+  maxpoint = approach(LABs, maxpoint, 1, 1)
   return maxpoint
 }
 
@@ -327,15 +316,23 @@ function neardelete(LABs, xyz, radius) {
   return filteredLABs;
 }
 
-function approach(LABs, xyz, step) {
-  var offsets = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1], [0, 1, 1], [1, 1, 0], [1, 0, 1], [1, 1, 1], [0, -1, -1], [-1, -1, 0], [-1, 0, -1], [-1, -1, -1], [0, 0, 0]]
+function approach(LABs, xyz, step, stepcount) {
+  var offsets = [];
+  for (var i = -stepcount; i <= stepcount; i++) {
+    for (var j = -stepcount; j <= stepcount; j++) {
+      for (var k = -stepcount; k <= stepcount; k++) {
+        offsets.push([i, j, k]);
+      }
+    }
+  }
   var max = 0
   resultxyz = JSON.parse(JSON.stringify(xyz));
   for (var i = 0; i < offsets.length; i++) {
     var x = xyz[0] + offsets[i][0] * step
     var y = xyz[1] + offsets[i][1] * step
     var z = xyz[2] + offsets[i][2] * step
-    var nearcountres = nearcount(LABs, x, y, z, Math.max(step / 2, 15))
+    //var nearcountres = nearcount(LABs, x, y, z, radius)
+    var nearcountres = LABs.reduce((accumulator, current) => accumulator + 1 / colordistlab(current, [x, y, z]), 0);
     if (nearcountres > max) {
       max = nearcountres
       resultxyz = [x, y, z]

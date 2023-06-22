@@ -8,35 +8,132 @@
   <title>Document</title>
   <style>
     body {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      -webkit-user-drag: none;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f1f1f1;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      margin-bottom: 50px;
+    }
+
+    .word-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .question-section {
+      font-size: 70pt;
+      font-weight: lighter;
+      /* Updated font weight */
+      color: #333;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      margin-top: 10px;
+      /* Updated top margin */
+      margin-left: 20px;
+      /* Updated left margin */
+      margin-right: 20px;
+      /* Updated right margin */
+    }
+
+    .word-section {
+      font-size: 70pt;
+      font-weight: bold;
+      /* Updated font weight */
+      color: #000;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      margin-top: 10px;
+      /* Updated top margin */
+      margin-left: 20px;
+      /* Updated left margin */
+      margin-right: 20px;
+      /* Updated right margin */
+      text-shadow: 2px 2px 4px rgba(5, 5, 5, 0.3);
+    }
+
+    .meaning-section {
+      font-size: 30pt;
+      font-weight: 500;
+      /* Updated font weight */
+      color: #555;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      margin-top: auto;
+      margin-left: 0px;
+      /* Updated left margin */
+      margin-right: 20px;
+      /* Updated right margin */
+    }
+
+    #sbh-container {
+      width: 400px;
+      height: 400px;
+      margin: 10px;
+    }
+
+    #sb {
+      width: 400px;
+      height: 350px;
+      float: left;
+      background-color: #fff;
+    }
+
+    #h {
+      margin-top: 10px;
+      width: 400px;
+      height: 50px;
+      float: left;
+      background-color: #fff;
+    }
+
+    #colorviewer {
+      width: 400px;
+      height: 400px;
+      margin: 10px;
+      border: 5px solid black;
+      background-color: rgb(154, 154, 154);
+    }
+
+    #submit {
+      width: 300px;
+      padding: 10px 20px;
+      font-size: 16px;
     }
   </style>
 </head>
 
 
-<body style="margin: 0px; letter-spacing: 0; word-spacing: 0; font-size: 0pt; white-space: nowrap;">
-  <div style="width: 100vw; height: 50vh; background-color: #DDD; ">
-    <p style="color:#333; font-size: 70pt; margin: 0px; font-weight: 500; font-family:Arial, Helvetica, sans-serif">what color do you see in a word...</p>
-    <p id="word" style="display: inline-block; font-size: 140pt; margin: 0px; font-weight: 500; font-family:Verdana, Geneva, Tahoma, sans-serif">Wisdom?</p>
-    <p id="meaning" style="display: inline-block; font-size: 30pt; margin: 0px; font-weight: 200; font-family:Verdana, Geneva, Tahoma, sans-serif"> - The ability to make sound judgments</p>
-  </div>
-  <div style="width: 33vw; height: 50vh; background-color: #555555; display: inline-block; vertical-align: top;">
-    <canvas id="sb" style="width: 80%; height: 400px; padding: 0; margin: 10px;"></canvas><br>
-    <canvas id="h" style="width: 80%; height: 30px; padding: 0; margin: 10px;"></canvas>
-  </div>
-  <div style="width: 34vw; height: 50vh; background-color: #555555; display: inline-block; vertical-align: top;">
-    <div style="width: 34vw; height: 10vh; background-color: #DDD; display: flex; align-items: center;">
-      <button id="submit" style="width: 80%; height: 80%; margin: auto; text-align: center;">다음으루넘어가는버튼</button>
+<body>
+  <div class="container">
+    <div class="word-container">
+      <p class="question-section">what color do you see in a word...</p>
+      <div style="display: flex; align-items: flex-start;">
+        <p class="word-section" id="word">Wisdom?</p>
+        <p class="meaning-section" id="meaning">- The ability to make sound judgments</p>
+      </div>
     </div>
-    <div style="width: 34vw; height: 40vh; background-color: #555555; display: block; "></div>
   </div>
-  <div style="width: 33vw; height: 50vh; background-color: #555555; display: inline-block; vertical-align: top;">
-    <div id="colorviewer" style="display:inline-flex; float: right; width: 400px; height: 400px; border: 5px solid black; background-color: rgb(255,0,0);"></div>
+  <div class="container">
+    <div id="sbh-container">
+      <canvas id="sb"></canvas>
+      <canvas id="h"></canvas>
+    </div>
+    <div id="colorviewer"></div>
   </div>
+  <button id="submit" style="background-color: #444; color: #AAA;">select your color first!</button>
 </body>
 <script src="./question.js"></script>
 
