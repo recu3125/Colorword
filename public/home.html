@@ -1,24 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Home Screen</title>
+  <style>
+    @font-face {
+      font-family: 'KCCChassam';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/KCCChassam.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'KCCGanpan';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/KCC-Ganpan.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #DDD;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      margin-bottom: 50px;
+    }
+
+    .word-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 100px;
+    }
+
+    .question-section {
+      font-size: 30pt;
+      font-weight: lighter;
+      color: #333;
+      margin: 0;
+      font-family: KCCChassam;
+      margin-top: 10px;
+      margin-left: 20px;
+      margin-right: 20px;
+    }
+
+    .word-section {
+      font-size: 35pt;
+      font-weight: bold;
+      color: #000;
+      margin: 0;
+      font-family: KCCGanpan;
+      margin-top: 10px;
+      margin-left: 20px;
+      margin-right: 20px;
+      text-shadow: 2px 2px 4px rgba(5, 5, 5, 0.3);
+    }
+
+    #submit {
+      border: 3px solid #aaa;
+      font-family: KCCGanpan;
+      width: 300px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 20px;
+    }
+
+
+    .scroller {
+      height: 1.2em;
+      line-height: 1.2em;
+      position: relative;
+      overflow: hidden;
+      width: 10em;
+    }
+
+    .scroller>span {
+      position: absolute;
+      top: 0;
+
+      animation: scroll infinite ease-in-out 10s;
+      font-weight: bold;
+    }
+
+    .scrollingText {
+      line-height: 110%;
+    }
+  </style>
 </head>
-<body style="margin: 0px; letter-spacing: 0; word-spacing: 0; font-size: 0pt; white-space: nowrap;">
-  <div style="width: 100vw; height: 50vh; background-color: #DDD; ">
-  <img src="./asdf.png" style="width: 100%; height: 100%; object-fit: contain;">
-  </div>
-  <div style="width: 33vw; height: 50vh; background-color: #555555; display: inline-block; vertical-align: top;"></div>
-  <div style="width: 34vw; height: 50vh; background-color: #555555; display: inline-block; vertical-align: top;">
-    <div style="width: 34vw; height: 10vh; background-color: #DDD; display: flex; align-items: center;">
-    <button style="width: 80%; height: 80%; margin: auto; text-align: center;" onclick="location.href='/question'">다음으루넘어가는버튼</button>
+
+<body>
+  <div class="word-container">
+    <p class="question-section">What color do you see in a word...</p>
+    <div style="display: flex; align-items: flex-start;">
+      <div class="word-section scroller">
+        <span class="scrollingText" id="scrollingText">
+          Love?<br>
+          Harmony?<br>
+          Energy?<br>
+          Passion?<br>
+          Creativity?<br>
+          Confidence?<br>
+          Joy?<br>
+          Wisdom?<br>
+          Curiosity?<br>
+          Power?<br>
+          Balance?<br>
+          Growth?<br>
+          Happiness?<br>
+          Hope?<br>
+          Ambition?<br>
+          Peace?<br>
+          Vibrant?<br>
+          Bold?<br>
+          Calm?<br>
+          Brilliant?<br>
+          Illuminating?<br>
+          Enchanting?<br>
+          Soothing?<br>
+          Dynamic?<br>
+          Uplifting?<br>
+          Love?
+        </span>
+      </div>
     </div>
-    <div style="width: 34vw; height: 40vh; background-color: #555555; display: block; "></div>
   </div>
-  <div style="width: 33vw; height: 50vh; background-color: #555555; display: inline-block; vertical-align: top;">
-    <p style="font-size: 30px; margin: 5%;">참여한 결과들<br>- asdf<br>- asdf<br>- asdf<br>- asdf<br>- asdf</p>
-  </div>
+  <button id="submit" onclick="location.href='/question'">start!</button>
 </body>
+<script src="home.js"></script>
+
 </html>
