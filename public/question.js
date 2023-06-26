@@ -54,7 +54,7 @@ let sbMouseX, sbMouseY, sbIn;
 let hMouseX, hMouseY, hIn;
 document.addEventListener('mousemove', (event) => {
   if (document.getElementById("colorviewer").style.backgroundColor !== "") {
-    document.getElementById("submit").style.backgroundColor = "#CCC"
+    document.getElementById("submit").style.backgroundColor = "#F0F0F0"
     document.getElementById("submit").style.color = "#000"
     document.getElementById("submit").textContent = "submit"
   }
@@ -94,7 +94,7 @@ document.addEventListener('mousemove', (event) => {
 
 document.addEventListener('mouseup', (event) => {
   if (document.getElementById("colorviewer").style.backgroundColor !== "") {
-    document.getElementById("submit").style.backgroundColor = "#CCC"
+    document.getElementById("submit").style.backgroundColor = "#F0F0F0"
     document.getElementById("submit").style.color = "#000"
     document.getElementById("submit").textContent = "submit"
   }

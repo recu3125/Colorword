@@ -7,6 +7,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
+    @font-face {
+      font-family: 'KCCChassam';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/KCCChassam.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'KCCGanpan';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/KCC-Ganpan.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -15,7 +29,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background-color: #f1f1f1;
+      background-color: #DDD;
     }
 
     .container {
@@ -29,53 +43,48 @@
     .word-container {
       display: flex;
       flex-direction: column;
+      margin-left: auto;
+      margin-right: auto;
       align-items: flex-start;
       margin-bottom: 20px;
     }
 
     .question-section {
-      font-size: 70pt;
+      font-size: 30pt;
       font-weight: lighter;
-      /* Updated font weight */
       color: #333;
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: KCCChassam;
       margin-top: 10px;
-      /* Updated top margin */
       margin-left: 20px;
-      /* Updated left margin */
       margin-right: 20px;
-      /* Updated right margin */
     }
 
     .word-section {
-      font-size: 70pt;
+      font-size: 35pt;
       font-weight: bold;
-      /* Updated font weight */
       color: #000;
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: KCCGanpan;
       margin-top: 10px;
-      /* Updated top margin */
       margin-left: 20px;
-      /* Updated left margin */
       margin-right: 20px;
-      /* Updated right margin */
       text-shadow: 2px 2px 4px rgba(5, 5, 5, 0.3);
     }
 
     .meaning-section {
-      font-size: 30pt;
-      font-weight: 500;
-      /* Updated font weight */
-      color: #555;
+      text-align: left;
+      font-size: 17pt;
+      color: #777;
+      font-family: KCCChassam;
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
       margin-top: auto;
       margin-left: 0px;
-      /* Updated left margin */
       margin-right: 20px;
-      /* Updated right margin */
+    }
+
+    h2 {
+      margin: 0;
     }
 
     #sbh-container {
@@ -85,6 +94,7 @@
     }
 
     #sb {
+      border: 2px dashed #555;
       width: 400px;
       height: 350px;
       float: left;
@@ -92,9 +102,11 @@
     }
 
     #h {
+      border: 2px solid #aaa;
       margin-top: 10px;
       width: 400px;
       height: 50px;
+      border-radius: 20px;
       float: left;
       background-color: #fff;
     }
@@ -103,14 +115,18 @@
       width: 400px;
       height: 400px;
       margin: 10px;
-      border: 5px solid black;
+      border: 2px solid #aaa;
       background-color: rgb(154, 154, 154);
+      border-radius: 40px;
     }
 
     #submit {
+      border: 3px solid #aaa;
+      font-family: KCCGanpan;
       width: 300px;
       padding: 10px 20px;
       font-size: 16px;
+      border-radius: 20px;
     }
   </style>
 </head>
@@ -119,10 +135,14 @@
 <body>
   <div class="container">
     <div class="word-container">
-      <p class="question-section">what color do you see in a word...</p>
+      <p class="question-section">What color do you see in a word...</p>
       <div style="display: flex; align-items: flex-start;">
-        <p class="word-section" id="word">Wisdom?</p>
-        <p class="meaning-section" id="meaning">- The ability to make sound judgments</p>
+        <div class="word-section">
+          <h2 id="word">Word</h2>
+        </div>
+        <div class="meaning-section">
+          <h2 id="meaning">Meaning</h2>
+        </div>
       </div>
     </div>
   </div>
