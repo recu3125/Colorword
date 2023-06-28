@@ -9,18 +9,17 @@
   <style>
     @font-face {
       font-family: 'KCCChassam';
-      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/KCCChassam.woff2') format('woff2');
+      src: url('./KCCChassam.woff2') format('woff2');
       font-weight: normal;
       font-style: normal;
     }
 
     @font-face {
       font-family: 'KCCGanpan';
-      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/KCC-Ganpan.woff2') format('woff2');
+      src: url('./KCC-Ganpan.woff2') format('woff2');
       font-weight: normal;
       font-style: normal;
     }
-
 
     body {
       font-family: Arial, sans-serif;
@@ -28,7 +27,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       min-height: 100vh;
       background-color: #DDD;
     }
@@ -71,6 +69,20 @@
       text-shadow: 2px 2px 4px rgba(5, 5, 5, 0.3);
     }
 
+    .title {
+      font-size: 140pt;
+      font-weight: bold;
+      background: linear-gradient(45deg, #444, #555, #666, #777, #888, #999, #aaa);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-family: KCCChassam;
+      margin-top: 12vw;
+      margin-bottom: 3vw;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
     #submit {
       border: 3px solid #aaa;
       font-family: KCCGanpan;
@@ -100,10 +112,52 @@
     .scrollingText {
       line-height: 110%;
     }
+
+
+    @media screen and (max-width: 800px) {
+      .title {
+        font-size: calc(90vw / 5);
+      }
+
+      .question-section {
+        font-size: 20pt;
+      }
+
+      .word-section {
+        font-size: 25pt;
+      }
+    }
+
+    @media screen and (orientation: landscape) {
+      .container {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .word-container {
+        margin-bottom: 0;
+      }
+
+      .question-section {
+        margin-top: 0;
+        margin-left: 0;
+      }
+
+      .word-section {
+        margin-top: 0;
+        margin-left: 0;
+      }
+
+      #submit {
+        margin-top: 20px;
+      }
+    }
   </style>
 </head>
 
 <body>
+  <h1 class="title">Colorword</h1>
   <div class="word-container">
     <p class="question-section">What color do you see in a word...</p>
     <div style="display: flex; align-items: flex-start;">

@@ -9,14 +9,14 @@
   <style>
     @font-face {
       font-family: 'KCCChassam';
-      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/KCCChassam.woff2') format('woff2');
+      src: url('./KCCChassam.woff2') format('woff2');
       font-weight: normal;
       font-style: normal;
     }
 
     @font-face {
       font-family: 'KCCGanpan';
-      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/KCC-Ganpan.woff2') format('woff2');
+      src: url('./KCC-Ganpan.woff2') format('woff2');
       font-weight: normal;
       font-style: normal;
     }
@@ -113,6 +113,41 @@
       font-size: 16px;
       margin-left: 10px;
       border: 3px solid #aaa;
+    }
+
+    @media screen and (max-width: 800px) {
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      #colorsort {
+        margin-right: 0;
+      }
+
+      .color-label {
+        margin-bottom: 10px;
+      }
+
+      .color-viewer-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .color-viewer-container:nth-child(2n) {
+        margin-left: 10px;
+      }
+
+      .button-container {
+        margin-top: 20px;
+      }
     }
   </style>
 </head>
