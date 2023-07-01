@@ -26,32 +26,48 @@ const colorwordModel = mongoose.model('colorword', colorwordSchema);
 //data init
 const words = ['Love', 'Harmony', 'Energy', 'Passion', 'Creativity', 'Confidence', 'Joy', 'Wisdom', 'Curiosity', 'Power', 'Balance', 'Growth', 'Happiness', 'Hope', 'Ambition', 'Peace', 'Vibrant', 'Bold', 'Calm', 'Brilliant', 'Illuminating', 'Enchanting', 'Soothing', 'Dynamic', 'Uplifting']
 const meanings = ['Deep affection and care.', 'State of peaceful coexistence.', 'Capacity for work or action.', 'Strong and intense emotion.', 'Ability to produce original ideas.', 'Belief in oneself and abilities.', 'Intense feeling of happiness.', 'Deep knowledge and understanding.', 'Desire to learn or explore.', 'Ability to exert influence or control.', 'State of equilibrium or stability.', 'Process of development and increase.', 'State of being happy and content.', 'Optimistic expectation or desire.', 'Strong desire for achievement or success.', 'State of tranquility and harmony.', 'Full of energy and vitality.', 'Fearless and daring in action.', 'Peaceful and undisturbed.', 'Exceptionally bright or intelligent.', 'Providing light or insight.', 'Captivating or charming.', 'Calming and comforting.', 'Energetic and active.', 'Inspiring and elevating.']
-colorwordModel.countDocuments({})
-  .then((count) => {
-    if (count === 0) {
-      // The collection is empty, run initialization code
-      for (let i = 0; i < words.length; i++) {
-        const colorword = new colorwordModel({
-          word: words[i],
-          meaning: meanings[i],
-          color: []
-        });
-        colorword.save()
-          .then(() => {
-            console.log('Document saved:', colorword);
-          })
-          .catch((error) => {
-            console.error('Failed to save document:', error);
+
+const promises = [];
+
+let added = []
+for (let i = 0; i < words.length; i++) {
+  promises.push(
+    colorwordModel.findOne({ word: words[i] })
+      .then((existingColorword) => {
+        if (!existingColorword) {
+          added.push(words[i])
+          const colorword = new colorwordModel({
+            word: words[i],
+            meaning: meanings[i],
+            color: []
           });
-      }
-    } else {
-      console.log('Collection is not empty. Skipping initialization.');
+          return colorword.save();
+        }
+      })
+      .catch((error) => {
+        console.error('Error while checking document:', error);
+      })
+  );
+}
+
+Promise.all(promises)
+  .then(() => {
+    if (added.length >= 1) {
+      console.log(`Words:${added} added or updated successfully.`);
     }
+    else {
+      console.log('Collection is complete. Skipping addition.');
+    }
+    colorwordModel.find({}, 'word')
+      .then((dbWords) => {
+        const extraDocuments = dbWords.filter(colorword => !words.includes(colorword.word));
+        console.log(`Db has ${extraDocuments.length} extra documents : ${extraDocuments.map(x => x.word)}`);
+      })
   })
   .catch((error) => {
-    console.error('Failed to check collection count:', error);
+    console.error('Failed to add or update documents:', error);
   });
-  
+
 function addColor(word, r, g, b) {
   colorwordModel.findOne({ word: word })
     .then((word) => {
@@ -85,7 +101,7 @@ async function getColors(word) {
   }
 }
 
-module.exports={
+module.exports = {
   addColor,
   getColors
 }
