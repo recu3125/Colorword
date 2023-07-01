@@ -22,7 +22,7 @@ async function identifyColor(RGB) {
   let closestColor = null;
   let minDistance = Infinity;
 
-  const colors = await (await fetch('/colors.json')).json()
+  const colors = await (await fetch('/resources/colors.json')).json()
   for (const color of colors) {
     const distance = colordist(RGB, color.rgb);
     if (distance < minDistance) {

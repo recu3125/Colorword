@@ -5,6 +5,7 @@ const apiRoutes = require('./routes/api');
 
 app.use('/api', apiRoutes);
 app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use('/resources', express.static(path.join(__dirname, '..', 'resources')));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'home.html'));
