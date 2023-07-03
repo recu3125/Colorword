@@ -62,7 +62,9 @@ Promise.all(promises)
     colorwordModel.find({}, 'word')
       .then((dbWords) => {
         const extraDocuments = dbWords.filter(colorword => !words.includes(colorword.word));
-        console.log(`Db has ${extraDocuments.length} extra documents : ${extraDocuments.map(x => x.word)}`);
+        if (extraDocuments.length >= 1) {
+          console.log(`Db has ${extraDocuments.length} extra documents : ${extraDocuments.map(x => x.word)}`);
+        }
       })
   })
   .catch((error) => {
