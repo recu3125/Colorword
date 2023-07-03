@@ -1,3 +1,4 @@
+const localStorage = window.localStorage;
 function extractRGB(rgbColor) {
   var rgbValues = rgbColor.substring(rgbColor.indexOf("(") + 1, rgbColor.indexOf(")")).split(", ");
   var red = parseInt(rgbValues[0]);
@@ -138,7 +139,11 @@ var words, meanings
   const wordData = await (await fetch('/resources/wordData.json')).json()
   words = wordData.words;
   meanings = wordData.meanings;
-  wordnum = Math.floor(Math.random() * words.length)
+  wordnum = 0
+  while (localStorage.getItem(words[wordnum]) !== null) {
+    wordnum++;
+  } 
+  console.log(wordnum)
   document.getElementById('word').textContent = words[wordnum] + '?'
   document.getElementById('meaning').textContent = ' - ' + meanings[wordnum]
 })()
@@ -175,5 +180,6 @@ button.addEventListener("click", function () {
     .catch((error) => {
       console.log('An error occurred:', error);
     });
+  localStorage.setItem(document.getElementById('word').textContent.slice(0, -1), JSON.stringify([r, g, b]));
   location.href = '/result' + '?word=' + document.getElementById('word').textContent.slice(0, -1) + '&meaning=' + document.getElementById('meaning').textContent + '&r=' + r + '&g=' + g + '&b=' + b
 });
