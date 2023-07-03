@@ -89,6 +89,22 @@
       align-items: flex-start;
     }
 
+    .button-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 35px;
+    }
+
+    .button-container button {
+      font-family: KCCGanpan;
+      border-radius: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+      border: 3px solid #aaa;
+    }
+
     h2 {
       margin: 0;
     }
@@ -176,9 +192,8 @@
       }
 
       #colorviewer {
-        width: 100;
-        max-width: 300px;
-        height: 100px;
+        width: 300px;
+        height: 300px;
         margin: 0px;
         margin-left: auto;
         margin-right: auto;
@@ -187,6 +202,17 @@
       #submit {
         width: 250px;
         font-size: 14px;
+      }
+    }
+
+    @media screen and (max-width: 625px) {
+      #colorviewer {
+        width: 100;
+        max-width: 300px;
+        height: 100px;
+        margin: 0px;
+        margin-left: auto;
+        margin-right: auto;
       }
     }
   </style>
@@ -214,7 +240,10 @@
     </div>
     <div id="colorviewer"></div>
   </div>
-  <button id="submit" style="background-color: #444; color: #AAA;">select your color first!</button>
+  <div class="button-container">
+    <button id="homeButton" onclick="location.href='/'">Home</button>
+    <button id="submit" style="background-color: #444; color: #AAA;">select your color first!</button>
+  </div>
 </body>
 <script src="./question.js"></script>
 
