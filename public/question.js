@@ -57,6 +57,7 @@ document.addEventListener('mousemove', (event) => {
   if (document.getElementById("colorviewer").style.backgroundColor !== "") {
     document.getElementById("submit").style.backgroundColor = "#F0F0F0"
     document.getElementById("submit").style.color = "#000"
+    document.getElementById("submit").style.width = "100px"
     document.getElementById("submit").textContent = "submit"
   }
   sbMouseX = event.pageX - sbCanvas.offsetLeft;
@@ -142,13 +143,14 @@ var words, meanings
   wordnum = 0
   while (localStorage.getItem(words[wordnum]) !== null) {
     wordnum++;
-  } 
-  console.log(wordnum)
+    if (wordnum >= words.length) {
+      location.href = '/results'
+      throw "every colorword has been submitted"
+    }
+  }
   document.getElementById('word').textContent = words[wordnum] + '?'
   document.getElementById('meaning').textContent = ' - ' + meanings[wordnum]
 })()
-
-console.log(navigator.userAgent)
 
 //버튼 눌리면 전송+결과 리다이렉트
 var button = document.getElementById("submit");
