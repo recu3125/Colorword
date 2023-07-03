@@ -133,10 +133,11 @@ document.addEventListener('mousedown', (event) => {
 });
 
 //단어배정
+var words, meanings
 (async () => {
   const wordData = await (await fetch('/resources/wordData.json')).json()
-  const words = wordData.words;
-  const meanings = wordData.meanings;
+  words = wordData.words;
+  meanings = wordData.meanings;
   wordnum = Math.floor(Math.random() * words.length)
   document.getElementById('word').textContent = words[wordnum] + '?'
   document.getElementById('meaning').textContent = ' - ' + meanings[wordnum]
