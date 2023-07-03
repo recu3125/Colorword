@@ -19,6 +19,10 @@ app.get('/result', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'result.html'));
 });
 
+app.get('/results', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'results.html'));
+});
+
 app.listen(80, () => {
   console.log("Server is listening on port 80")
 });

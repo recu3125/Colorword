@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    @font-face {
+      font-family: 'KCCChassam';
+      src: url('./resources/KCCChassam.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'KCCGanpan';
+      src: url('./resources/KCC-Ganpan.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: auto;
+      margin-top: 20vh;
+    }
+
+    .title {
+      width: fit-content;
+      font-size: 30pt;
+      font-weight: lighter;
+      color: #333;
+      font-family: KCCChassam;
+      margin: 50px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    button {
+      border: 1px solid #aaa;
+      font-family: KCCGanpan;
+      margin-right: 10px;
+      width: 162px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      color: #333;
+      transition: all 0.9s, color 0.3s;
+      -webkit-transition: all 0.9s, color 0.3s;
+    }
+
+    button:hover {
+      color: fff;
+      box-shadow: 0 80px 0 0 rgba(255, 0, 0, 0.15) inset,
+        0 -80px 0 0 rgba(0, 255, 0, 0.15) inset,
+        200px 0 0 0 rgba(0, 0, 255, 0.07) inset,
+        -200px 0 0 0 rgba(0, 0, 255, 0.07) inset;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="container">
+    <p class="title">colorwords you submitted</p>
+  </div>
+</body>
+<script src="./results.js"></script>
+
+</html>
