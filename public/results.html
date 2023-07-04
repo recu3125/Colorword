@@ -20,7 +20,7 @@
       font-style: normal;
     }
 
-    body{
+    body {
       background-color: #DDD;
     }
 
@@ -76,6 +76,43 @@
       position: absolute;
       bottom: 0;
       margin-bottom: 10vh;
+    }
+
+    @media screen and (max-width: 1400px) {
+      .title {
+        font-size: 20pt;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .container {
+        margin-top: 5vh;
+      }
+
+      .title {
+        font-size: 20pt;
+        margin: 30px;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .homeButton {
+        margin-left: calc(50vw - 81px - 5px);
+        width: 162px;
+        height: fit-content;
+        margin-bottom: 5vh;
+        position: fixed;
+        bottom: 0;
+      }
+    }
+
+    
+    @media screen and (max-width: 412px) {
+      .title {
+        font-size: 15pt;
+      }
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
