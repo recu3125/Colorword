@@ -40,6 +40,39 @@ fetch('/resources/wordData.json')
   });
 
 function flyconfetti() {
+  var count = 300;
+  var defaults = {
+    origin: { y: 0.6 }
+  };
+
+  function fire(particleRatio, opts) {
+    confetti(Object.assign({}, defaults, opts, {
+      particleCount: Math.floor(count * particleRatio)
+    }));
+  }
+
+  fire(0.25, {
+    spread: 26,
+    startVelocity: 55,
+  });
+  fire(0.2, {
+    spread: 60,
+  });
+  fire(0.35, {
+    spread: 100,
+    decay: 0.91,
+    scalar: 0.8
+  });
+  fire(0.1, {
+    spread: 120,
+    startVelocity: 25,
+    decay: 0.92,
+    scalar: 1.2
+  });
+  fire(0.1, {
+    spread: 120,
+    startVelocity: 85,
+  });
   var end = Date.now() + (7 * 1000);
   var colors = ["#6127f8", "#24e071", "#84a1b2", "#95cffe", "#9e1ada", "#d78b76", "#aed26e", "#3917f7", "#90c35d", "#42da06", "#694fc6", "#d3b272", "#fee22e", "#12ba9b", "#1bf1b4", "#6af91b", "#45004b", "#78db95", "#b9db2c", "#5b1621", "#d9992e", "#e2fb34", "#adaf9b", "#537f44", "#ef7278", "#230ee2", "#26cbcf",];
 
