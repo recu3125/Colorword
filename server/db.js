@@ -17,7 +17,8 @@ const colorwordSchema = new mongoose.Schema({
   colors: [{
     r: Number,
     g: Number,
-    b: Number
+    b: Number,
+    time: String
   }]
 });
 
@@ -71,6 +72,32 @@ Promise.all(promises)
     console.error('Failed to add or update documents:', error);
   });
 
+function getCurrentDateTime() {
+  // Create a new Date object
+  const date = new Date();
+
+  // Get the UTC time offset for the specified time zone (in minutes)
+  const timeZoneOffset = new Date().getTimezoneOffset();
+
+  // Apply the timezone offset to the current date
+  const targetTime = new Date(date.getTime() - (timeZoneOffset * 60000));
+
+  // Format the date and time as "yyyy-MM-dd-hh-mm-ss"
+  const formattedDateTime = targetTime.toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+    timeZone: 'UTC'
+  });
+
+  return formattedDateTime;
+}
+
+
 function addColor(word, r, g, b) {
   colorwordModel.findOne({ word: word })
     .then((word) => {
@@ -78,7 +105,7 @@ function addColor(word, r, g, b) {
         throw new Error('Word not found');
       }
 
-      word.colors.push({ r: r, g: g, b: b });
+      word.colors.push({ r: r, g: g, b: b, time: getCurrentDateTime()});
 
       return word.save();
     })
