@@ -59,6 +59,22 @@
       height: 85vh;
     }
 
+    .info-container {
+      font-family: KCCChassam;
+      font-size: 22px;
+      color: #000;
+      text-shadow: 0px 0px 2px #fff;
+      max-width: 700px;
+      margin: 30px;
+      overflow: scroll;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .info-container::-webkit-scrollbar {
+      display: none;
+    }
+
     .container {
       display: flex;
       flex-wrap: wrap;
@@ -230,7 +246,7 @@
       transition: 0.3s;
     }
 
-    .arrow a:hover{
+    .arrow a:hover {
       color: #777;
     }
 
@@ -301,6 +317,19 @@
     </div>
   </div>
   <div class="info-section" id="info-section">
+    <div class="info-container">
+      <h2>Colorword</h2>
+      <p>what color comes to your mind from the word &quot;intelligence&quot;?<br>
+        there is a tendency in the colors people associate with a word, as many people answer blue-like colors to it.<br>
+        Did you also think of the same color? No? Aren&#39;t you curious about what colors other people usually think of? </p>
+      <p>Colorword is a project website where people gather colors that come to mind from words and make them into a single picture of color combinations!</p>
+      <h3>☆Tips☆</h3>
+      <ul>
+        <li>Answer all the words to suggest new words! You will receive a link to suggest new words to be added to this website when you answer all the words.</li>
+        <li>Avoid selecting extreme colors at the edges of the color picker, such as 100% white or black.</li>
+        <li>Choose your colors carefully and try to find the exact color in your mind. Strive for perfection.</li>
+      </ul>
+    </div>
   </div>
 </body>
 <script src="home.js"></script>
