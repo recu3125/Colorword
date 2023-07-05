@@ -121,7 +121,7 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-family: KCCChassam;
-      margin-top: 12vw;
+      margin-top: 15vh;
       margin-bottom: 3vw;
       margin-left: auto;
       margin-right: auto;
@@ -268,11 +268,24 @@
         transform: translateY(-15px);
       }
     }
+
+    .card {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+    }
   </style>
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 </head>
 
 <body>
+  <div class="card">
+    <div class="repo-card card" data-repo="recu3125/Colorword">
+    </div>
+    <div style="color: #000; margin-top: 115px; font-size: 14px; width: 100%;">
+        give me a star! :)
+    </div>
+  </div>
   <div class="main-section">
     <h1 class="title">Colorword</h1>
     <div class="word-container">
@@ -333,5 +346,6 @@
   </div>
 </body>
 <script src="home.js"></script>
+<script src="https://tarptaeya.github.io/repo-card/repo-card.js"></script>
 
 </html>
