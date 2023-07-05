@@ -53,23 +53,31 @@ var clickedInH = false
 var clickedInSb = false
 let sbMouseX, sbMouseY, sbIn;
 let hMouseX, hMouseY, hIn;
-document.addEventListener('mousemove', (event) => {
+function onMove(event) {
+  if (event.type == 'touchstart' || event.type == 'touchmove' || event.type == 'touchend' || event.type == 'touchcancel') {
+    var touch = event.touches[0] || event.changedTouches[0];
+    x = touch.pageX;
+    y = touch.pageY;
+  } else if (event.type == 'mousedown' || event.type == 'mouseup' || event.type == 'mousemove' || event.type == 'mouseover' || event.type == 'mouseout' || event.type == 'mouseenter' || event.type == 'mouseleave') {
+    x = event.pageX;
+    y = event.pageY;
+  }
   if (document.getElementById("colorviewer").style.backgroundColor !== "") {
     document.getElementById("submit").style.backgroundColor = "#F0F0F0"
     document.getElementById("submit").style.color = "#000"
     document.getElementById("submit").style.width = "100px"
     document.getElementById("submit").textContent = "submit"
   }
-  sbMouseX = event.pageX - sbCanvas.offsetLeft;
-  sbMouseY = event.pageY - sbCanvas.offsetTop;
+  sbMouseX = x - sbCanvas.offsetLeft;
+  sbMouseY = y - sbCanvas.offsetTop;
   if (sbMouseX > sbCanvas.offsetWidth || sbMouseX < 0 || sbMouseY > sbCanvas.offsetHeight || sbMouseY < 0) {
     sbIn = false
   }
   else {
     sbIn = true
   }
-  hMouseX = event.pageX - hCanvas.offsetLeft;
-  hMouseY = event.pageY - hCanvas.offsetTop;
+  hMouseX = x - hCanvas.offsetLeft;
+  hMouseY = y - hCanvas.offsetTop;
   if (hMouseX > hCanvas.offsetWidth || hMouseX < 0 || hMouseY > hCanvas.offsetHeight || hMouseY < 0) {
     hIn = false
   }
@@ -92,9 +100,11 @@ document.addEventListener('mousemove', (event) => {
         sbCanvasChange(color)
     }
   }
-});
+}
+document.addEventListener('mousemove', onMove);
+document.addEventListener('touchmove', onMove);
 
-document.addEventListener('mouseup', (event) => {
+function onUp(event) {
   if (document.getElementById("colorviewer").style.backgroundColor !== "") {
     document.getElementById("submit").style.backgroundColor = "#F0F0F0"
     document.getElementById("submit").style.color = "#000"
@@ -103,9 +113,13 @@ document.addEventListener('mouseup', (event) => {
   mouseDown = false
   clickedInH = false
   clickedInSb = false
-});
+}
 
-document.addEventListener('mousedown', (event) => {
+document.addEventListener('mouseup', onUp);
+document.addEventListener('touchend', onUp);
+
+function onDown(event) {
+  onMove(event)
   if (hIn) {
     clickedInH = true
   }
@@ -132,7 +146,9 @@ document.addEventListener('mousedown', (event) => {
       sbCanvasChange(color)
   }
   mouseDown = true
-});
+}
+document.addEventListener('mousedown', onDown);
+document.addEventListener('touchstart', onDown);
 
 function shuffle(obj1, obj2) {
   var index = obj1.length;
@@ -157,7 +173,7 @@ var words, meanings
   words = wordData.words;
   meanings = wordData.meanings;
   wordnum = 0
-  shuffle(words,meanings)
+  shuffle(words, meanings)
   while (localStorage.getItem(words[wordnum]) !== null) {
     wordnum++;
     if (wordnum >= words.length) {
