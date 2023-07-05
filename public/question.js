@@ -189,7 +189,10 @@ var words, meanings
 var button = document.getElementById("submit");
 
 // Attach a click event listener to the button
-button.addEventListener("click", function () {
+button.addEventListener("touchend", onSend);
+button.addEventListener("click", onSend);
+
+function onSend(){
   if (button.textContent == "select your color first!") {
     return
   }
@@ -211,10 +214,10 @@ button.addEventListener("click", function () {
     })
     .then((data) => {
       console.log(data.message);
+      localStorage.setItem(document.getElementById('word').textContent.slice(0, -1), JSON.stringify([r, g, b]));
+      location.href = '/result' + '?word=' + document.getElementById('word').textContent.slice(0, -1) + '&meaning=' + document.getElementById('meaning').textContent + '&r=' + r + '&g=' + g + '&b=' + b
     })
     .catch((error) => {
       console.log('An error occurred:', error);
     });
-  localStorage.setItem(document.getElementById('word').textContent.slice(0, -1), JSON.stringify([r, g, b]));
-  location.href = '/result' + '?word=' + document.getElementById('word').textContent.slice(0, -1) + '&meaning=' + document.getElementById('meaning').textContent + '&r=' + r + '&g=' + g + '&b=' + b
-});
+}
