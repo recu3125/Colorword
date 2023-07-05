@@ -192,10 +192,15 @@ var button = document.getElementById("submit");
 button.addEventListener("touchend", onSend);
 button.addEventListener("click", onSend);
 
-function onSend(){
+let sending = false
+function onSend() {
   if (button.textContent == "select your color first!") {
     return
   }
+  if (sending) {
+    return
+  }
+  sending = true
   const { r, g, b } = extractRGB(document.getElementById("colorviewer").style.backgroundColor)
   fetch('/api/submitcolor', {
     method: 'POST',
@@ -216,8 +221,10 @@ function onSend(){
       console.log(data.message);
       localStorage.setItem(document.getElementById('word').textContent.slice(0, -1), JSON.stringify([r, g, b]));
       location.href = '/result' + '?word=' + document.getElementById('word').textContent.slice(0, -1) + '&meaning=' + document.getElementById('meaning').textContent + '&r=' + r + '&g=' + g + '&b=' + b
+      sending = false
     })
     .catch((error) => {
       console.log('An error occurred:', error);
+      sending = false
     });
 }
