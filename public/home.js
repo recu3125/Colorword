@@ -5,7 +5,7 @@ fetch('/resources/wordData.json')
     words = wordData.words
     text = ''
     for (i = 0; i < words.length; i++) {
-      text += words[i] + '<br>'
+      text += words[i] + '?' + '<br>'
     }
     text += words[0]
     console.log(text)
