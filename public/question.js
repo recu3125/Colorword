@@ -1,9 +1,9 @@
 const localStorage = window.localStorage;
 function extractRGB(rgbColor) {
-  var rgbValues = rgbColor.substring(rgbColor.indexOf("(") + 1, rgbColor.indexOf(")")).split(", ");
-  var red = parseInt(rgbValues[0]);
-  var green = parseInt(rgbValues[1]);
-  var blue = parseInt(rgbValues[2]);
+  let rgbValues = rgbColor.substring(rgbColor.indexOf("(") + 1, rgbColor.indexOf(")")).split(", ");
+  let red = parseInt(rgbValues[0]);
+  let green = parseInt(rgbValues[1]);
+  let blue = parseInt(rgbValues[2]);
 
   return {
     r: red,
@@ -12,12 +12,12 @@ function extractRGB(rgbColor) {
   };
 }
 
-var hCanvas = document.getElementById("h")
-var hCtx = hCanvas.getContext('2d');
+let hCanvas = document.getElementById("h")
+let hCtx = hCanvas.getContext('2d');
 hCanvas.width = hCanvas.clientWidth;
 hCanvas.height = hCanvas.clientHeight;
 hCtx.setTransform(1, 0, 0, 1, 0, 0);
-var hueGradient = hCtx.createLinearGradient(0, 0, hCtx.canvas.width, 0);
+let hueGradient = hCtx.createLinearGradient(0, 0, hCtx.canvas.width, 0);
 hueGradient.addColorStop(0, 'rgb(255, 0, 0)');
 hueGradient.addColorStop(0.15, 'rgb(255, 0, 255)');
 hueGradient.addColorStop(0.33, 'rgb(0, 0, 255)');
@@ -28,8 +28,8 @@ hueGradient.addColorStop(1, 'rgb(255, 0, 0)');
 hCtx.fillStyle = hueGradient;
 hCtx.fillRect(0, 0, hCtx.canvas.width, hCtx.canvas.height);
 
-var sbCanvas = document.getElementById("sb")
-var sbCtx = sbCanvas.getContext('2d');
+let sbCanvas = document.getElementById("sb")
+let sbCtx = sbCanvas.getContext('2d');
 sbCanvas.width = sbCanvas.clientWidth;
 sbCanvas.height = sbCanvas.clientHeight;
 sbCtx.setTransform(1, 0, 0, 1, 0, 0);
@@ -37,25 +37,25 @@ sbCanvasChange('rgb(255,0,0)')
 function sbCanvasChange(hueselected) {
   sbCtx.fillStyle = hueselected
   sbCtx.fillRect(0, 0, sbCtx.canvas.width, sbCtx.canvas.height);
-  var saturationGradient = sbCtx.createLinearGradient(0, 0, hCtx.canvas.width, 0);
+  let saturationGradient = sbCtx.createLinearGradient(0, 0, hCtx.canvas.width, 0);
   saturationGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
   saturationGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
   sbCtx.fillStyle = saturationGradient;
   sbCtx.fillRect(0, 0, sbCtx.canvas.width, sbCtx.canvas.height);
-  var brightnessGradient = sbCtx.createLinearGradient(0, 0, 0, sbCtx.canvas.height);
+  let brightnessGradient = sbCtx.createLinearGradient(0, 0, 0, sbCtx.canvas.height);
   brightnessGradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
   brightnessGradient.addColorStop(1, 'rgba(0, 0, 0, 1)');
   sbCtx.fillStyle = brightnessGradient;
   sbCtx.fillRect(0, 0, sbCtx.canvas.width, sbCtx.canvas.height);
 }
-var mouseDown = false
-var clickedInH = false
-var clickedInSb = false
+let mouseDown = false
+let clickedInH = false
+let clickedInSb = false
 let sbMouseX, sbMouseY, sbIn;
 let hMouseX, hMouseY, hIn;
 function onMove(event) {
   if (event.type == 'touchstart' || event.type == 'touchmove' || event.type == 'touchend' || event.type == 'touchcancel') {
-    var touch = event.touches[0] || event.changedTouches[0];
+    let touch = event.touches[0] || event.changedTouches[0];
     x = touch.pageX;
     y = touch.pageY;
   } else if (event.type == 'mousedown' || event.type == 'mouseup' || event.type == 'mousemove' || event.type == 'mouseover' || event.type == 'mouseout' || event.type == 'mouseenter' || event.type == 'mouseleave') {
@@ -151,8 +151,8 @@ document.addEventListener('mousedown', onDown);
 document.addEventListener('touchstart', onDown);
 
 function shuffle(obj1, obj2) {
-  var index = obj1.length;
-  var rnd, tmp1, tmp2;
+  let index = obj1.length;
+  let rnd, tmp1, tmp2;
 
   while (index) {
     rnd = Math.floor(Math.random() * index);
@@ -167,7 +167,7 @@ function shuffle(obj1, obj2) {
 }
 
 //단어배정
-var words, meanings
+let words, meanings
 (async () => {
   const wordData = await (await fetch('/resources/wordData.json')).json()
   words = wordData.words;
@@ -186,7 +186,7 @@ var words, meanings
 })()
 
 //버튼 눌리면 전송+결과 리다이렉트
-var button = document.getElementById("submit");
+let button = document.getElementById("submit");
 
 // Attach a click event listener to the button
 button.addEventListener("touchend", onSend);

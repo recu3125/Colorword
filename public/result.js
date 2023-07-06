@@ -8,13 +8,13 @@ class RGBColor {
 }
 
 function parseurl() {
-  var currentURL = window.location.href;
-  var searchParams = new URLSearchParams(window.location.search);
-  var word = searchParams.get("word");
-  var meaning = searchParams.get("meaning");
-  var r = searchParams.get("r");
-  var g = searchParams.get("g");
-  var b = searchParams.get("b");
+  let currentURL = window.location.href;
+  let searchParams = new URLSearchParams(window.location.search);
+  let word = searchParams.get("word");
+  let meaning = searchParams.get("meaning");
+  let r = searchParams.get("r");
+  let g = searchParams.get("g");
+  let b = searchParams.get("b");
   return { word, meaning, r, g, b }
 }
 
@@ -36,57 +36,47 @@ async function identifyColor(RGB) {
 
 async function getRGBs() {
   const { word, meaning, r, g, b } = parseurl()
-  return fetch('/api/colors?word=' + word)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Request failed with status ' + response.status);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      const colorsData = JSON.parse(data);
-      const colors = colorsData.map(colorData => {
-        const { r, g, b } = colorData;
-        return new RGBColor(parseInt(r), parseInt(g), parseInt(b), 255); // Assuming the "a" value is set to 1 for all colors
-      });
-      return colors
-    })
-    .catch((error) => {
-      console.log('An error occurred:', error);
-    });
+  const response = await fetch('/api/colors?word=' + word)
+  const colorsData = JSON.parse(await response.json());
+  const colors = colorsData.map(colorData => {
+    const { r, g, b } = colorData;
+    return new RGBColor(parseInt(r), parseInt(g), parseInt(b), 255);
+  });
+  return colors
 }
 
 const imagewh = 100
 async function loaded() {
   const { word, meaning, r, g, b } = parseurl()
-  var selectedRGB = new RGBColor(r, g, b, 255)
-  var RGBs = await getRGBs()
+  let selectedRGB = new RGBColor(r, g, b, 255)
+  let RGBs = await getRGBs()
   RGBs = await matchcolorscount(RGBs, imagewh * imagewh)
-  var LABs = await RGBs.map(x => RGBtoLAB(x))
-  var selectedLAB = RGBtoLAB(selectedRGB)
-  //var percent = nearcount(LABs, selectedLAB[0], selectedLAB[1], selectedLAB[2], 20) //비슷한 선택을 한 사람 수
+  let LABs = await RGBs.map(x => RGBtoLAB(x))
+  let selectedLAB = RGBtoLAB(selectedRGB)
+  //let percent = nearcount(LABs, selectedLAB[0], selectedLAB[1], selectedLAB[2], 20) //비슷한 선택을 한 사람 수
 
   //mostcolor
-  var mostcolor1 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
+  let mostcolor1 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
+  let mostcolor2, mostcolor3
   const delradiusarray = [15, 10, 5, 2, 0]
   if (LABs.length >= 3) {
-    var delradiusindex = 0
+    let delradiusindex = 0
     while (neardelete(LABs, RGBtoLAB(mostcolor1), delradiusarray[delradiusindex]).length < 2) {
       delradiusindex += 1
     }
     LABs = neardelete(LABs, RGBtoLAB(mostcolor1), delradiusarray[delradiusindex])
-    var mostcolor2 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
+    mostcolor2 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
   }
   else {
     mostcolor2 = mostcolor1
   }
   if (LABs.length >= 2) {
-    var delradiusindex = 0
+    let delradiusindex = 0
     while (neardelete(LABs, RGBtoLAB(mostcolor2), delradiusarray[delradiusindex]).length < 1) {
       delradiusindex += 1
     }
     LABs = neardelete(LABs, RGBtoLAB(mostcolor2), delradiusarray[delradiusindex])
-    var mostcolor3 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
+    mostcolor3 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
   }
   else {
     mostcolor3 = mostcolor2
@@ -108,10 +98,10 @@ async function loaded() {
 }
 
 function nearestcolor(RGBs, RGB) {
-  var min = Infinity
-  var minval = false
-  for (var i = 0; i < RGBs.length; i++) {
-    var dist = colordist(RGBs[i], RGB)
+  let min = Infinity
+  let minval = false
+  for (let i = 0; i < RGBs.length; i++) {
+    let dist = colordist(RGBs[i], RGB)
     if (dist < min) {
       minval = RGBs[i]
       min = dist
@@ -121,51 +111,56 @@ function nearestcolor(RGBs, RGB) {
 }
 
 function makeimage(RGBs) {
-  var canvas = document.getElementById('colorsort')
-  var ctx = canvas.getContext('2d');
+  let canvas = document.getElementById('colorsort')
+  let ctx = canvas.getContext('2d');
 
   //pixels init
-  var pixels = []
-  for (var i = 0; i < imagewh; i++) {
-    var row = []
-    for (var j = 0; j < imagewh; j++) {
+  let pixels = []
+  for (let i = 0; i < imagewh; i++) {
+    let row = []
+    for (let j = 0; j < imagewh; j++) {
       row.push(false)
     }
     pixels.push(row)
   }
 
-  var LABs = RGBs.map(RGB => RGBtoLAB(RGB))
-  var mainRGB = LABtoRGB(mostcolor(LABs))
+  let LABs = RGBs.map(RGB => RGBtoLAB(RGB))
+  let mainRGB = LABtoRGB(mostcolor(LABs))
   pixels[imagewh / 2][imagewh / 2] = mainRGB
   RGBs.splice(0, 1)
+  LABs.splice(0, 1)
   let limitdist = 10
   step()
   function step() {
-    var prepixels = structuredClone(pixels);
-    for (var i = 0; i < imagewh; i++) {
-      for (var j = 0; j < imagewh; j++) {
-        if (prepixels[i][j] != false) continue;
-        var [aroundRGB, aroundcount] = aroundcolor(pixels, prepixels, i, j)
-        possibilities = [0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 3]
+    let prepixels = structuredClone(pixels);
+    for (let i = 0; i < imagewh; i++) {
+      for (let j = 0; j < imagewh; j++) {
+        if (prepixels[i][j] !== false) continue;
+        let [aroundRGB, aroundcount] = aroundcolor(pixels, prepixels, i, j)
+        let possibilities = [0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 3]
         if (aroundcount <= possibilities[Math.floor(Math.random() * 10)]) {
           continue;
         }
-        var idealRGB = biasavgcolor(mainRGB, aroundRGB, 50)
-        var mindist = 10000000
-        var minloc = 0
-        for (var k = 0; k < RGBs.length; k++) {
-          if (colordist(RGBs[k], idealRGB) < mindist) {
-            mindist = colordist(RGBs[k], idealRGB)
+        let idealRGB = biasavgcolor(mainRGB, aroundRGB, 50)
+        let idealLAB = RGBtoLAB(idealRGB)
+        let mindist = 10000000
+        let minloc = 0
+        for (let k = 0, len = LABs.length; k < len; k++) {
+          let distEach = colordistlab(LABs[k], idealLAB)
+          if (distEach < mindist) {
+            mindist = distEach
             minloc = k
           }
         }
-        if (aroundcount <= Math.random() * 6 + 2 && colordist(RGBs[minloc], aroundRGB) > limitdist) {
+        let aroundLAB=RGBtoLAB(aroundRGB)
+        if (aroundcount <= Math.random() * 6 + 2 && colordistlab(LABs[minloc], aroundLAB) > limitdist) {
           limitdist += 5
           continue
         }
         else { limitdist -= 5 }
         pixels[i][j] = RGBs[minloc]
         RGBs.splice(minloc, 1)
+        LABs.splice(minloc, 1)
       }
     }
     if (pixels[imagewh / 2 + 1][imagewh / 2] != false && pixels[imagewh / 2 - 1][imagewh / 2] != false && pixels[imagewh / 2][imagewh / 2 + 1] != false && pixels[imagewh / 2][imagewh / 2 - 1] != false) pixels[imagewh / 2][imagewh / 2] = avgcolor([pixels[imagewh / 2][imagewh / 2 + 1], pixels[imagewh / 2 + 1][imagewh / 2], pixels[imagewh / 2][imagewh / 2 - 1], pixels[imagewh / 2 - 1][imagewh / 2]])
@@ -180,10 +175,10 @@ function makeimage(RGBs) {
 }
 
 function viewimage(pixels, ctx) {
-  var img = ctx.createImageData(imagewh, imagewh);
+  let img = ctx.createImageData(imagewh, imagewh);
   //pixels to img
-  for (var i = 0; i < imagewh; i++) {
-    for (var j = 0; j < imagewh; j++) {
+  for (let i = 0; i < imagewh; i++) {
+    for (let j = 0; j < imagewh; j++) {
       {
         img.data[4 * (i * imagewh + j)] = pixels[i][j].r
         img.data[4 * (i * imagewh + j) + 1] = pixels[i][j].g
@@ -196,7 +191,7 @@ function viewimage(pixels, ctx) {
 }
 
 async function matchcolorscount(RGBs, targetnum) {
-  var matchedRGBs = structuredClone(RGBs);
+  let matchedRGBs = structuredClone(RGBs);
   while (matchedRGBs.length > targetnum) {
     matchedRGBs.splice(Math.floor(Math.random() * (matchedRGBs.length)), 1)
   }
@@ -207,29 +202,27 @@ async function matchcolorscount(RGBs, targetnum) {
 }
 
 function RGBnoise(RGB) {
-  var r = Math.min(Math.max(0, RGB.r + Math.floor(Math.random() * 20 - 10)), 255)
-  var g = Math.min(Math.max(0, RGB.g + Math.floor(Math.random() * 20 - 10)), 255)
-  var b = Math.min(Math.max(0, RGB.b + Math.floor(Math.random() * 20 - 10)), 255)
+  let r = Math.min(Math.max(0, RGB.r + Math.floor(Math.random() * 20 - 10)), 255)
+  let g = Math.min(Math.max(0, RGB.g + Math.floor(Math.random() * 20 - 10)), 255)
+  let b = Math.min(Math.max(0, RGB.b + Math.floor(Math.random() * 20 - 10)), 255)
   return new RGBColor(r, g, b, RGB.a)
 }
 
 function colordist(RGB1, RGB2) {
-  var LAB1 = RGBtoLAB(RGB1)
-  var LAB2 = RGBtoLAB(RGB2)
+  let LAB1 = RGBtoLAB(RGB1)
+  let LAB2 = RGBtoLAB(RGB2)
   return Math.pow(LAB1[0] - LAB2[0], 2) + Math.pow(LAB1[1] - LAB2[1], 2) + Math.pow(LAB1[2] - LAB2[2], 2)
 }
 function colordistlab(LAB1, LAB2) {
-  var LAB1 = LAB1
-  var LAB2 = LAB2
   return Math.pow(LAB1[0] - LAB2[0], 2) + Math.pow(LAB1[1] - LAB2[1], 2) + Math.pow(LAB1[2] - LAB2[2], 2)
 }
 
 function aroundcolor(pixels, prepixels, i, j) {
-  var RGBlist = []
-  var aroundlist = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
-  for (var k = 0; k < aroundlist.length; k++) {
-    var x = i + aroundlist[k][0]
-    var y = j + aroundlist[k][1]
+  let RGBlist = []
+  let aroundlist = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
+  for (let k = 0; k < aroundlist.length; k++) {
+    let x = i + aroundlist[k][0]
+    let y = j + aroundlist[k][1]
     if (imagewh > x && imagewh > y && x >= 0 && y >= 0 && prepixels[x][y] != false) {
       RGBlist.push(pixels[x][y])
     }
@@ -238,9 +231,9 @@ function aroundcolor(pixels, prepixels, i, j) {
 }
 
 function avgcolor(RGBlist) {
-  var result = new RGBColor(0, 0, 0, 255)
-  for (var i = 0; i < RGBlist.length; i++) {
-    var RGB = RGBlist[i]
+  let result = new RGBColor(0, 0, 0, 255)
+  for (let i = 0; i < RGBlist.length; i++) {
+    let RGB = RGBlist[i]
     result.r += RGB.r
     result.g += RGB.g
     result.b += RGB.b
@@ -252,7 +245,7 @@ function avgcolor(RGBlist) {
 }
 
 function biasavgcolor(RGB1, RGB2, biastoone) {
-  var result = new RGBColor(0, 0, 0, 255)
+  let result = new RGBColor(0, 0, 0, 255)
   result.r += RGB1.r * biastoone
   result.g += RGB1.g * biastoone
   result.b += RGB1.b * biastoone
@@ -267,14 +260,14 @@ function biasavgcolor(RGB1, RGB2, biastoone) {
 
 function testcolors(RGBscount) {
 
-  var bias = new RGBColor(0, 100, 155, 255)
-  var bstrength = 1
-  var RGBslist = []
-  for (var i = 0; i < RGBscount; i++) {
-    var red = Math.round(Math.random() * 255)
-    var green = Math.round(Math.random() * 255)
-    var blue = Math.round(Math.random() * 255)
-    var alpha = 255
+  let bias = new RGBColor(0, 100, 155, 255)
+  let bstrength = 1
+  let RGBslist = []
+  for (let i = 0; i < RGBscount; i++) {
+    let red = Math.round(Math.random() * 255)
+    let green = Math.round(Math.random() * 255)
+    let blue = Math.round(Math.random() * 255)
+    let alpha = 255
     //bias
     if (bstrength >= 1) {
       red = Math.round(red >= bias.r ? (-Math.pow((256 - red) * Math.pow(256 - bias.r, bstrength), 1 / (bstrength + 1)) + 256) : Math.pow(red * Math.pow(bias.r, bstrength), 1 / (bstrength + 1)))
@@ -286,14 +279,7 @@ function testcolors(RGBscount) {
   return RGBslist
 }
 
-// CIELAB
-var cache = new Array(256)
-for (var i = 0; i < 256; i++) {
-  cache[i] = new Array(256)
-  for (var j = 0; j < 256; j++) {
-    cache[i][j] = new Array(256).fill(0)
-  }
-}
+
 function mostcolor(LABs) {
   maxpoint = [50, 0, 0]
   maxpoint = approach(LABs, maxpoint, 32, 3)
@@ -306,11 +292,11 @@ function mostcolor(LABs) {
 }
 
 function neardelete(LABs, xyz, radius) {
-  var x = xyz[0], y = xyz[1], z = xyz[2];
-  var filteredLABs = [];
+  let x = xyz[0], y = xyz[1], z = xyz[2];
+  let filteredLABs = [];
 
-  for (var i = 0; i < LABs.length; i++) {
-    var dist = colordistlab(LABs[i], [x, y, z]);
+  for (let i = 0; i < LABs.length; i++) {
+    let dist = colordistlab(LABs[i], [x, y, z]);
     if (dist > (radius * radius)) {
       filteredLABs.push(LABs[i]);
     }
@@ -320,22 +306,22 @@ function neardelete(LABs, xyz, radius) {
 }
 
 function approach(LABs, xyz, step, stepcount) {
-  var offsets = [];
-  for (var i = -stepcount; i <= stepcount; i++) {
-    for (var j = -stepcount; j <= stepcount; j++) {
-      for (var k = -stepcount; k <= stepcount; k++) {
+  let offsets = [];
+  for (let i = -stepcount; i <= stepcount; i++) {
+    for (let j = -stepcount; j <= stepcount; j++) {
+      for (let k = -stepcount; k <= stepcount; k++) {
         offsets.push([i, j, k]);
       }
     }
   }
-  var max = 0
+  let max = 0
   resultxyz = structuredClone(xyz);
-  for (var i = 0; i < offsets.length; i++) {
-    var x = xyz[0] + offsets[i][0] * step
-    var y = xyz[1] + offsets[i][1] * step
-    var z = xyz[2] + offsets[i][2] * step
-    //var nearcountres = nearcount(LABs, x, y, z, radius)
-    var nearcountres = LABs.reduce((accumulator, current) => accumulator + 1 / colordistlab(current, [x, y, z]), 0);
+  for (let i = 0; i < offsets.length; i++) {
+    let x = xyz[0] + offsets[i][0] * step
+    let y = xyz[1] + offsets[i][1] * step
+    let z = xyz[2] + offsets[i][2] * step
+    //let nearcountres = nearcount(LABs, x, y, z, radius)
+    let nearcountres = LABs.reduce((accumulator, current) => accumulator + 1 / colordistlab(current, [x, y, z]), 0);
     if (nearcountres > max) {
       max = nearcountres
       resultxyz = [x, y, z]
@@ -346,8 +332,8 @@ function approach(LABs, xyz, step, stepcount) {
 
 function nearcount(LABs, x, y, z, radius) {
   count = 0
-  for (var i = 0; i < LABs.length; i++) {
-    var dist = colordistlab(LABs[i], [x, y, z])
+  for (let i = 0; i < LABs.length; i++) {
+    let dist = colordistlab(LABs[i], [x, y, z])
     if (dist <= (radius * radius)) {
       count += 1
     }
@@ -415,62 +401,50 @@ function LABtoRGB(LAB) {
   return new RGBColor(rFinal, gFinal, bFinal, 255);
 }
 
+// CIELAB
+let cache = new Array(256)
+for (let i = 0; i < 256; i++) {
+  cache[i] = new Array(256)
+  for (let j = 0; j < 256; j++) {
+    cache[i][j] = new Array(256).fill(0)
+  }
+}
 function RGBtoLAB(RGB) {
   if (cache[RGB.r][RGB.g][RGB.b] !== 0) {
     return cache[RGB.r][RGB.g][RGB.b]
   }
 
-  var r = RGB.r
-  var g = RGB.g
-  var b = RGB.b
+  const rgbKey = `${RGB.r}-${RGB.g}-${RGB.b}`;
 
-  let rPrime = r / 255;
-  let gPrime = g / 255;
-  let bPrime = b / 255;
+  const r = RGB.r / 255;
+  const g = RGB.g / 255;
+  const b = RGB.b / 255;
 
-  if (rPrime > 0.04045) {
-    rPrime = Math.pow(((rPrime + 0.055) / 1.055), 2.4);
-  } else {
-    rPrime /= 12.92;
-  }
+  const linearizeColor = (color) => {
+    if (color > 0.04045) {
+      return Math.pow((color + 0.055) / 1.055, 2.4);
+    }
+    return color / 12.92;
+  };
 
-  if (gPrime > 0.04045) {
-    gPrime = Math.pow(((gPrime + 0.055) / 1.055), 2.4);
-  } else {
-    gPrime /= 12.92;
-  }
+  const xyzTransform = (color) => {
+    if (color > 0.008856) {
+      return Math.pow(color, 1 / 3);
+    }
+    return (903.3 * color + 16) / 116;
+  };
 
-  if (bPrime > 0.04045) {
-    bPrime = Math.pow(((bPrime + 0.055) / 1.055), 2.4);
-  } else {
-    bPrime /= 12.92;
-  }
+  const rLinear = linearizeColor(r);
+  const gLinear = linearizeColor(g);
+  const bLinear = linearizeColor(b);
 
-  let x = (rPrime * 0.4124 + gPrime * 0.3576 + bPrime * 0.1805) / 0.95047;
-  let y = (rPrime * 0.2126 + gPrime * 0.7152 + bPrime * 0.0722) / 1.00000;
-  let z = (rPrime * 0.0193 + gPrime * 0.1192 + bPrime * 0.9505) / 1.08883;
+  const x = (0.4124564 * rLinear + 0.3575761 * gLinear + 0.1804375 * bLinear) / 0.95047;
+  const y = (0.2126729 * rLinear + 0.7151522 * gLinear + 0.072175 * bLinear) / 1.00000;
+  const z = (0.0193339 * rLinear + 0.119192 * gLinear + 0.9503041 * bLinear) / 1.08883;
 
-  if (x > 0.008856) {
-    x = Math.pow(x, (1 / 3));
-  } else {
-    x = (7.787 * x) + (16 / 116);
-  }
-
-  if (y > 0.008856) {
-    y = Math.pow(y, (1 / 3));
-  } else {
-    y = (7.787 * y) + (16 / 116);
-  }
-
-  if (z > 0.008856) {
-    z = Math.pow(z, (1 / 3));
-  } else {
-    z = (7.787 * z) + (16 / 116);
-  }
-
-  let L = (116 * y) - 16;
-  let A = 500 * (x - y);
-  let B = 200 * (y - z);
+  const L = (116 * xyzTransform(y)) - 16;
+  const A = 500 * (xyzTransform(x) - xyzTransform(y));
+  const B = 200 * (xyzTransform(y) - xyzTransform(z));
 
   cache[RGB.r][RGB.g][RGB.b] = [L, A, B]
   return [L, A, B];
