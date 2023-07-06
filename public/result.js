@@ -23,7 +23,8 @@ async function identifyColor(RGB) {
   let minDistance = Infinity;
 
   const colors = await (await fetch('/resources/colors.json')).json()
-  for (const color of colors) {
+  for (let i = 0; i < colors.length; i++) {
+    let color = colors[i]
     const distance = colordist(RGB, color.rgb);
     if (distance < minDistance) {
       minDistance = distance;
@@ -137,17 +138,19 @@ function makeimage(RGBs) {
   var mainRGB = LABtoRGB(mostcolor(LABs))
   pixels[imagewh / 2][imagewh / 2] = mainRGB
   RGBs.splice(0, 1)
+  let limitdist = 10
   step()
   function step() {
-    var prepixels = JSON.parse(JSON.stringify(pixels));
+    var prepixels = structuredClone(pixels);
     for (var i = 0; i < imagewh; i++) {
       for (var j = 0; j < imagewh; j++) {
         if (prepixels[i][j] != false) continue;
-        var idealRGB = aroundcolor(pixels, prepixels, i, j)
-        if (idealRGB == false) {
+        var [aroundRGB, aroundcount] = aroundcolor(pixels, prepixels, i, j)
+        possibilities = [0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 3]
+        if (aroundcount <= possibilities[Math.floor(Math.random() * 10)]) {
           continue;
         }
-        idealRGB = biasavgcolor(mainRGB, idealRGB, 50)
+        var idealRGB = biasavgcolor(mainRGB, aroundRGB, 50)
         var mindist = 10000000
         var minloc = 0
         for (var k = 0; k < RGBs.length; k++) {
@@ -156,6 +159,11 @@ function makeimage(RGBs) {
             minloc = k
           }
         }
+        if (aroundcount <= Math.random() * 6 + 2 && colordist(RGBs[minloc], aroundRGB) > limitdist) {
+          limitdist += 5
+          continue
+        }
+        else { limitdist -= 5 }
         pixels[i][j] = RGBs[minloc]
         RGBs.splice(minloc, 1)
       }
@@ -188,7 +196,7 @@ function viewimage(pixels, ctx) {
 }
 
 async function matchcolorscount(RGBs, targetnum) {
-  var matchedRGBs = JSON.parse(JSON.stringify(RGBs));
+  var matchedRGBs = structuredClone(RGBs);
   while (matchedRGBs.length > targetnum) {
     matchedRGBs.splice(Math.floor(Math.random() * (matchedRGBs.length)), 1)
   }
@@ -226,12 +234,7 @@ function aroundcolor(pixels, prepixels, i, j) {
       RGBlist.push(pixels[x][y])
     }
   }
-
-  pixeltoextend = [0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 3]
-  if (RGBlist.length <= pixeltoextend[Math.floor(Math.random() * 10)]) {
-    return false
-  }
-  return avgcolor(RGBlist)
+  return [avgcolor(RGBlist), RGBlist.length]
 }
 
 function avgcolor(RGBlist) {
@@ -326,7 +329,7 @@ function approach(LABs, xyz, step, stepcount) {
     }
   }
   var max = 0
-  resultxyz = JSON.parse(JSON.stringify(xyz));
+  resultxyz = structuredClone(xyz);
   for (var i = 0; i < offsets.length; i++) {
     var x = xyz[0] + offsets[i][0] * step
     var y = xyz[1] + offsets[i][1] * step
