@@ -183,6 +183,7 @@ let words, meanings
   }
   document.getElementById('word').textContent = words[wordnum] + '?'
   document.getElementById('meaning').textContent = ' - ' + meanings[wordnum]
+  document.title = 'Colorword - What color do you see in a word... ' + words[wordnum] + '?'
 })()
 
 //버튼 눌리면 전송+결과 리다이렉트

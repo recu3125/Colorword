@@ -48,6 +48,7 @@ async function getRGBs() {
 const imagewh = 100
 async function loaded() {
   const { word, meaning, r, g, b } = parseurl()
+  document.title = 'Colorword - ' + word
   let selectedRGB = new RGBColor(r, g, b, 255)
   let RGBs = await getRGBs()
   RGBs = await matchcolorscount(RGBs, imagewh * imagewh)
@@ -152,7 +153,7 @@ function makeimage(RGBs) {
             minloc = k
           }
         }
-        let aroundLAB=RGBtoLAB(aroundRGB)
+        let aroundLAB = RGBtoLAB(aroundRGB)
         if (aroundcount <= Math.random() * 6 + 2 && colordistlab(LABs[minloc], aroundLAB) > limitdist) {
           limitdist += 5
           continue
@@ -205,12 +206,12 @@ function RGBnoise(RGB) {
   let r = RGB.r + Math.floor(Math.random() * 30 - 15)
   let g = RGB.g + Math.floor(Math.random() * 30 - 15)
   let b = RGB.b + Math.floor(Math.random() * 30 - 15)
-  r=Math.abs(r)
-  g=Math.abs(g)
-  b=Math.abs(b)
-  r=255-Math.abs(r-255)
-  g=255-Math.abs(g-255)
-  b=255-Math.abs(b-255)
+  r = Math.abs(r)
+  g = Math.abs(g)
+  b = Math.abs(b)
+  r = 255 - Math.abs(r - 255)
+  g = 255 - Math.abs(g - 255)
+  b = 255 - Math.abs(b - 255)
   return new RGBColor(r, g, b, RGB.a)
 }
 
