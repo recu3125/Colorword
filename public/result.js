@@ -202,9 +202,15 @@ async function matchcolorscount(RGBs, targetnum) {
 }
 
 function RGBnoise(RGB) {
-  let r = Math.min(Math.max(0, RGB.r + Math.floor(Math.random() * 20 - 10)), 255)
-  let g = Math.min(Math.max(0, RGB.g + Math.floor(Math.random() * 20 - 10)), 255)
-  let b = Math.min(Math.max(0, RGB.b + Math.floor(Math.random() * 20 - 10)), 255)
+  let r = RGB.r + Math.floor(Math.random() * 30 - 15)
+  let g = RGB.g + Math.floor(Math.random() * 30 - 15)
+  let b = RGB.b + Math.floor(Math.random() * 30 - 15)
+  r=Math.abs(r)
+  g=Math.abs(g)
+  b=Math.abs(b)
+  r=255-Math.abs(r-255)
+  g=255-Math.abs(g-255)
+  b=255-Math.abs(b-255)
   return new RGBColor(r, g, b, RGB.a)
 }
 
