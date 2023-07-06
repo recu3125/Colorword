@@ -7,7 +7,7 @@ fetch('/resources/wordData.json')
     for (i = 0; i < words.length; i++) {
       text += words[i] + '?' + '<br>'
     }
-    text += words[0]
+    text += words[0] + '?'
     console.log(text)
     scrollingText.innerHTML = text
     const lines = scrollingText.getElementsByTagName('br').length + 1;
