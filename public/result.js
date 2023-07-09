@@ -18,11 +18,13 @@ function parseurl() {
   return { word, meaning, r, g, b }
 }
 
+var colors = false
 async function identifyColor(RGB) {
+  if (colors === false) {
+    colors = await (await fetch('/resources/colors.json')).json()
+  }
   let closestColor = null;
   let minDistance = Infinity;
-
-  const colors = await (await fetch('/resources/colors.json')).json()
   for (let i = 0; i < colors.length; i++) {
     let color = colors[i]
     const distance = colordist(RGB, color.rgb);
