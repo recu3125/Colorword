@@ -46,7 +46,7 @@
       align-items: center;
       margin: 0;
       max-width: 100%;
-      width: 100vw;
+      width: 100%;
       height: 100vh;
     }
 
@@ -57,7 +57,7 @@
       align-items: center;
       margin: 0;
       max-width: 100%;
-      width: 100vw;
+      width: 100%;
       height: 85vh;
     }
 
@@ -234,7 +234,7 @@
       -moz-animation: bounce 2s infinite;
       -webkit-animation: bounce 2s infinite;
       animation: bounce 2s infinite;
-      width: 100%;
+      width: fit-content;
       height: 80px;
       justify-content: center;
       align-items: center;
@@ -276,6 +276,24 @@
       top: 10px;
       right: 10px;
     }
+
+    .givestar {
+      color: #000;
+      margin-top: 115px;
+      font-size: 14px;
+      width: 100%;
+    }
+
+
+    @media screen and (max-height:830px) {
+      .givestar {
+        margin-top: 10px;
+      }
+
+      .repo-card {
+        display: none;
+      }
+    }
   </style>
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 </head>
@@ -284,7 +302,7 @@
   <div class="card">
     <div class="repo-card card" data-repo="recu3125/Colorword">
     </div>
-    <div style="color: #000; margin-top: 115px; font-size: 14px; width: 100%;">
+    <div class="givestar" onclick="href='github.com/recu3125/Colorword'; target='_blank'">
       give me a star! :)
     </div>
   </div>
@@ -338,7 +356,7 @@
         there is a tendency in the colors people associate with a word, as many people answer blue-like colors to it.<br>
         Did you also think of the same color? No? Aren&#39;t you curious about what colors other people usually think of? </p>
       <p>Colorword is a project website where people gather colors that come to mind from words and make them into a single picture of color combinations!</p>
-      <h3>☆Tips☆</h3>
+      <h3>Tips</h3>
       <ul>
         <li>Answer all the words to suggest new words! You will receive a link to suggest new words to be added to this website when you answer all the words.</li>
         <li>Avoid selecting extreme colors at the edges of the color picker, such as 100% white or black.</li>

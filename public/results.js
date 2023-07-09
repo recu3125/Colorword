@@ -1,3 +1,8 @@
+var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+if (width <= 380) {
+  document.querySelector("meta[name=viewport]").setAttribute('content', 'width=device-width, initial-scale=' + Math.min(width / 380, 1));
+}
+
 const localStorage = window.localStorage;
 const container = document.getElementById('container');
 let allAnswered = true

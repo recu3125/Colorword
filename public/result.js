@@ -1,3 +1,8 @@
+var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+if (width <= 470) {
+  document.querySelector("meta[name=viewport]").setAttribute('content', 'width=device-width, initial-scale=' + Math.min(width / 470, 1));
+}
+
 class RGBColor {
   constructor(r, g, b, a) {
     this.r = r
