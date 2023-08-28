@@ -1,4 +1,4 @@
-# <img src="https://github.com/recu3125/Colorword/assets/68118081/d4c045f7-e7bb-4162-891f-f78fa402aeaa" width="35px">  Colorword
+# <img src="https://github.com/recu3125/Colorword/assets/68118081/d4c045f7-e7bb-4162-891f-f78fa402aeaa" width="35px"> <a href="https://colorword.recu3125.com">Colorword</a>
 ### what color do you see in a word.... " "?
 <br>
 <br>Do you know what synesthesia is?
