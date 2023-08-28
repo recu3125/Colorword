@@ -38,7 +38,7 @@ let sbCtx = sbCanvas.getContext('2d');
 sbCanvas.width = sbCanvas.clientWidth;
 sbCanvas.height = sbCanvas.clientHeight;
 sbCtx.setTransform(1, 0, 0, 1, 0, 0);
-sbCanvasChange('rgb(255,0,0)')
+sbCanvasChange('rgb(154, 154, 154)')
 function sbCanvasChange(hueselected) {
   sbCtx.fillStyle = hueselected
   sbCtx.fillRect(0, 0, sbCtx.canvas.width, sbCtx.canvas.height);
@@ -96,6 +96,7 @@ function onMove(event) {
       let color = 'rgb(' + colorAtMouse[0] + ',' + colorAtMouse[1] + ',' + colorAtMouse[2] + ')';
       if (color != "rgb(0,0,0)") {
         document.getElementById("colorviewer").style.backgroundColor = color
+        document.getElementById("word").style.color = color
       }
     }
     if (clickedInH) {
@@ -142,6 +143,7 @@ function onDown(event) {
     let color = 'rgb(' + colorAtMouse[0] + ',' + colorAtMouse[1] + ',' + colorAtMouse[2] + ')';
     if (color != "rgb(0,0,0)") {
       document.getElementById("colorviewer").style.backgroundColor = color
+      document.getElementById("word").style.color = color
     }
   }
   if (clickedInH) {
