@@ -7,6 +7,7 @@ const port = 8081
 app.use('/api', apiRoutes);
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/resources', express.static(path.join(__dirname, '..', 'resources')));
+app.use('/icon', express.static(path.join(__dirname, '..', 'icon')));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'home.html'));
