@@ -1,4 +1,4 @@
-# Colorword
+# <img src="https://github.com/recu3125/Colorword/assets/68118081/d4c045f7-e7bb-4162-891f-f78fa402aeaa" width="35px">  Colorword
 ### what color do you see in a word.... " "?
 <br>
 <br>Do you know what synesthesia is?
@@ -9,7 +9,6 @@
 <br>You thought the same thing? No? Aren't you curious about what colors other people usually think of?
 <br>
 <br>Colorword is a project website where people gather colors that come to mind from words and make them into a single picture of color combinations!
-<br>It is currently under development, but it will be completed soon!
 <br>
 <br>공감각이 무엇인지 아시나요?
 <br>드물게, 글자에서 색깔을 볼 수 있는 사람들이 있습니다.
@@ -19,4 +18,3 @@
 <br>같은 생각을 하셨고요? 아니라고요? 다른 사람들은 어떤 색깔을 주로 떠올렸는지 궁금하지 않나요?
 <br>
 <br>Colorword는 사람들이 단어에서 떠올린 색들을 모아 색이 조합된 사진 하나로 만드는 프로젝트 웹사이트입니다!
-<br>현재 개발 중에 있지만, 곧 완성될 거에요!
