@@ -17,6 +17,7 @@ function extractRGB(rgbColor) {
   };
 }
 
+let isHueSelected = false
 let hCanvas = document.getElementById("h")
 let hCtx = hCanvas.getContext('2d');
 hCanvas.width = hCanvas.clientWidth;
@@ -39,7 +40,9 @@ sbCanvas.width = sbCanvas.clientWidth;
 sbCanvas.height = sbCanvas.clientHeight;
 sbCtx.setTransform(1, 0, 0, 1, 0, 0);
 sbCanvasChange('rgb(154, 154, 154)')
+isHueSelected = false
 function sbCanvasChange(hueselected) {
+  isHueSelected = true
   sbCtx.fillStyle = hueselected
   sbCtx.fillRect(0, 0, sbCtx.canvas.width, sbCtx.canvas.height);
   let saturationGradient = sbCtx.createLinearGradient(0, 0, hCtx.canvas.width, 0);
@@ -68,10 +71,16 @@ function onMove(event) {
     y = event.pageY;
   }
   if (document.getElementById("colorviewer").style.backgroundColor !== "") {
-    document.getElementById("submit").style.backgroundColor = "#F0F0F0"
-    document.getElementById("submit").style.color = "#000"
-    document.getElementById("submit").style.width = "100px"
-    document.getElementById("submit").textContent = "submit"
+    if (isHueSelected == false) {
+      document.getElementById("submit").textContent = "select hue first!"
+      document.getElementById("submit").style.width = "170px"
+    }
+    else {
+      document.getElementById("submit").textContent = "submit"
+      document.getElementById("submit").style.backgroundColor = "#F0F0F0"
+      document.getElementById("submit").style.color = "#000"
+      document.getElementById("submit").style.width = "100px"
+    }
   }
   sbMouseX = x - sbCanvas.offsetLeft;
   sbMouseY = y - sbCanvas.offsetTop;
@@ -112,9 +121,13 @@ document.addEventListener('touchmove', onMove);
 
 function onUp(event) {
   if (document.getElementById("colorviewer").style.backgroundColor !== "") {
-    document.getElementById("submit").style.backgroundColor = "#F0F0F0"
-    document.getElementById("submit").style.color = "#000"
-    document.getElementById("submit").textContent = "submit"
+    if (isHueSelected == false)
+      document.getElementById("submit").textContent = "select hue first!"
+    else {
+      document.getElementById("submit").style.backgroundColor = "#F0F0F0"
+      document.getElementById("submit").style.color = "#000"
+      document.getElementById("submit").textContent = "submit"
+    }
   }
   mouseDown = false
   clickedInH = false
