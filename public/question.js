@@ -215,7 +215,7 @@ button.addEventListener("click", onSend);
 
 let sending = false
 function onSend() {
-  if (button.textContent == "select your color first!") {
+  if (button.textContent !== "submit") {
     return
   }
   if (sending) {
