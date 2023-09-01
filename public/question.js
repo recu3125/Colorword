@@ -90,15 +90,17 @@ let sbCtx = sbCanvas.getContext('2d');
 sbCanvas.width = sbCanvas.clientWidth;
 sbCanvas.height = sbCanvas.clientHeight;
 sbCtx.setTransform(1, 0, 0, 1, 0, 0);
-sbCanvasChange('rgb(154, 154, 154)')
+sbCanvasChange('rgb(154, 154, 154)', true)
 isHueSelected = false
-function sbCanvasChange(huergbselected) {
+function sbCanvasChange(huergbselected, grayscale) {
   isHueSelected = true
   const hue = rgbToHue(huergbselected)
-  console.log(hue)
   for (row = 0; row < sbCanvas.height; row++) {
     var grad = sbCtx.createLinearGradient(0, 0, sbCanvas.width, 0);
-    grad.addColorStop(1, 'hsl(' + hue + ', 100%, ' + (sbCanvas.height - row) / sbCanvas.height * 100 + '%)');
+    if (grayscale)
+      grad.addColorStop(1, 'hsl(' + hue + ', 0%, ' + (sbCanvas.height - row) / sbCanvas.height * 100 + '%)');
+    else
+      grad.addColorStop(1, 'hsl(' + hue + ', 100%, ' + (sbCanvas.height - row) / sbCanvas.height * 100 + '%)');
     grad.addColorStop(0, 'hsl(' + hue + ', 0%, ' + (sbCanvas.height - row) / sbCanvas.height * 100 + '%)');
     sbCtx.fillStyle = grad;
     sbCtx.fillRect(0, row, sbCanvas.width, 1);
@@ -160,7 +162,7 @@ function onMove(event) {
       let colorAtMouse = hCtx.getImageData(hMouseX, 1, 1, 1).data;
       let color = 'rgb(' + colorAtMouse[0] + ',' + colorAtMouse[1] + ',' + colorAtMouse[2] + ')';
       if (color != "rgb(0,0,0)")
-        sbCanvasChange(color)
+        sbCanvasChange(color, false)
     }
   }
 }
@@ -211,7 +213,7 @@ function onDown(event) {
     let colorAtMouse = hCtx.getImageData(hMouseX, 1, 1, 1).data;
     let color = 'rgb(' + colorAtMouse[0] + ',' + colorAtMouse[1] + ',' + colorAtMouse[2] + ')';
     if (color != "rgb(0,0,0)")
-      sbCanvasChange(color)
+      sbCanvasChange(color, false)
   }
   mouseDown = true
 }
