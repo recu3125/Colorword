@@ -190,7 +190,8 @@ function shuffle(obj1, obj2) {
 let wordsWithColorsCount, wordnum
 (async () => {
   wordsWithColorsCount = JSON.parse(await (await fetch('/api/getwordswithcolorscount')).json())
-  wordsWithColorsCount.sort((x, y) => x[2] - y[2])
+  if (Math.random() * 2 > 1)
+    wordsWithColorsCount.sort((x, y) => x[2] - y[2])
   wordnum = 0
   // shuffle(words, meanings)
   // while (localStorage.getItem(words[wordnum]) !== null) {
