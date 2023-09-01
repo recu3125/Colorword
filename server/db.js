@@ -65,6 +65,16 @@ Promise.all(promises)
         const extraDocuments = dbWords.filter(colorword => !words.includes(colorword.word));
         if (extraDocuments.length >= 1) {
           console.log(`Db has ${extraDocuments.length} extra documents : ${extraDocuments.map(x => x.word)}`);
+
+          // Delete extra documents from the collection
+          const extraDocumentIds = extraDocuments.map(doc => doc._id);
+          colorwordModel.deleteMany({ _id: { $in: extraDocumentIds } })
+            .then(() => {
+              console.log(`Deleted ${extraDocuments.length} extra documents.`);
+            })
+            .catch((deleteError) => {
+              console.error('Failed to delete extra documents:', deleteError);
+            });
         }
       })
   })
@@ -105,7 +115,7 @@ function addColor(word, r, g, b) {
         throw new Error('Word not found');
       }
 
-      word.colors.push({ r: r, g: g, b: b, time: getCurrentDateTime()});
+      word.colors.push({ r: r, g: g, b: b, time: getCurrentDateTime() });
 
       return word.save();
     })
@@ -131,7 +141,25 @@ async function getColors(word) {
   }
 }
 
+async function getWordsWithColorsCount() {
+  try {
+    const documents = await colorwordModel.find({}).lean().exec();
+    const wordsWithColorsCountPromises = documents.map(async (wordfound) => {
+      const colorLength = wordfound.colors ? wordfound.colors.length : 0;
+      return [wordfound.word, wordfound.meaning, colorLength];
+    });
+
+    const wordsWithColorsCount = await Promise.all(wordsWithColorsCountPromises);
+
+    return wordsWithColorsCount;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
 module.exports = {
   addColor,
-  getColors
+  getColors,
+  getWordsWithColorsCount
 }

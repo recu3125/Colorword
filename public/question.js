@@ -187,23 +187,29 @@ function shuffle(obj1, obj2) {
 }
 
 //단어배정
-let words, meanings
+let wordsWithColorsCount, wordnum
 (async () => {
-  const wordData = await (await fetch('/resources/wordData.json')).json()
-  words = wordData.words;
-  meanings = wordData.meanings;
+  wordsWithColorsCount = JSON.parse(await (await fetch('/api/getwordswithcolorscount')).json())
+  wordsWithColorsCount.sort((x, y) => x[2] - y[2])
   wordnum = 0
-  shuffle(words, meanings)
-  while (localStorage.getItem(words[wordnum]) !== null) {
+  // shuffle(words, meanings)
+  // while (localStorage.getItem(words[wordnum]) !== null) {
+  //   wordnum++;
+  //   if (wordnum >= words.length) {
+  //     location.href = '/results'
+  //     throw "every colorword has been submitted"
+  //   }
+  // }
+  while (localStorage.getItem(wordsWithColorsCount[wordnum][0]) !== null) {
     wordnum++;
-    if (wordnum >= words.length) {
+    if (wordnum >= wordsWithColorsCount.length) {
       location.href = '/results'
       throw "every colorword has been submitted"
     }
   }
-  document.getElementById('word').textContent = words[wordnum] + '?'
-  document.getElementById('meaning').textContent = ' - ' + meanings[wordnum]
-  document.title = 'Colorword - What color do you see in a word... ' + words[wordnum] + '?'
+  document.getElementById('word').textContent = wordsWithColorsCount[wordnum][0] + '?'
+  document.getElementById('meaning').textContent = ' - ' + wordsWithColorsCount[wordnum][1]
+  document.title = 'Colorword - What color do you see in a word... ' + wordsWithColorsCount[wordnum][0] + '?'
 })()
 
 //버튼 눌리면 전송+결과 리다이렉트
@@ -228,7 +234,7 @@ function onSend() {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify([words[wordnum], { r, g, b }]),
+    body: JSON.stringify([wordsWithColorsCount[wordnum][0], { r, g, b }]),
   })
     .then((response) => {
       if (response.ok) {

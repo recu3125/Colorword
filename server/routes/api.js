@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {addColor,getColors} = require('../db')
+const { addColor, getColors, getWordsWithColorsCount } = require('../db')
 router.use(express.json());
 
 // Handle POST request to submit RGB data
@@ -16,8 +16,13 @@ router.post('/submitcolor', (req, res) => {
 
 router.get('/colors', (req, res) => {
   const word = req.query.word;
-  getColors(word).then(colors=>{
-  res.json(JSON.stringify(colors));})
+  getColors(word).then(colors => {
+    res.json(JSON.stringify(colors));
+  })
+});
+
+router.get('/getwordswithcolorscount', async (req, res) => {
+  res.json(JSON.stringify(await getWordsWithColorsCount()))
 });
 
 module.exports = router;
