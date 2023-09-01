@@ -33,6 +33,57 @@ hueGradient.addColorStop(0.84, 'rgb(255, 255, 0)');
 hueGradient.addColorStop(1, 'rgb(255, 0, 0)');
 hCtx.fillStyle = hueGradient;
 hCtx.fillRect(0, 0, hCtx.canvas.width, hCtx.canvas.height);
+function rgbToHue(rgb) {
+  // Extract the RGB values using regular expressions
+  const match = rgb.match(/\d+/g);
+  console.log(match)
+  if (!match) {
+    throw new Error('Invalid RGB color format');
+  }
+
+  // Parse the RGB values
+  const r = parseInt(match[0]);
+  const g = parseInt(match[1]);
+  const b = parseInt(match[2]);
+
+  console.log(r, g, b)
+  // Normalize the RGB values
+  const rNorm = r / 255;
+  const gNorm = g / 255;
+  const bNorm = b / 255;
+
+  // Find the maximum and minimum values among R, G, and B
+  const max = Math.max(rNorm, gNorm, bNorm);
+  const min = Math.min(rNorm, gNorm, bNorm);
+
+  // Calculate the delta
+  const delta = max - min;
+
+  let hue = 0;
+
+  // Calculate the hue
+  if (delta === 0) {
+    hue = 0; // Achromatic (gray)
+  } else {
+    if (max === rNorm) {
+      hue = ((gNorm - bNorm) / delta) % 6;
+    } else if (max === gNorm) {
+      hue = ((bNorm - rNorm) / delta + 2) % 6;
+    } else {
+      hue = ((rNorm - gNorm) / delta + 4) % 6;
+    }
+  }
+
+  // Convert hue to degrees
+  hue = hue * 60;
+
+  // Ensure the hue is non-negative
+  if (hue < 0) {
+    hue += 360;
+  }
+
+  return hue;
+}
 
 let sbCanvas = document.getElementById("sb")
 let sbCtx = sbCanvas.getContext('2d');
@@ -41,20 +92,17 @@ sbCanvas.height = sbCanvas.clientHeight;
 sbCtx.setTransform(1, 0, 0, 1, 0, 0);
 sbCanvasChange('rgb(154, 154, 154)')
 isHueSelected = false
-function sbCanvasChange(hueselected) {
+function sbCanvasChange(huergbselected) {
   isHueSelected = true
-  sbCtx.fillStyle = hueselected
-  sbCtx.fillRect(0, 0, sbCtx.canvas.width, sbCtx.canvas.height);
-  let saturationGradient = sbCtx.createLinearGradient(0, 0, hCtx.canvas.width, 0);
-  saturationGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-  saturationGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-  sbCtx.fillStyle = saturationGradient;
-  sbCtx.fillRect(0, 0, sbCtx.canvas.width, sbCtx.canvas.height);
-  let brightnessGradient = sbCtx.createLinearGradient(0, 0, 0, sbCtx.canvas.height);
-  brightnessGradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
-  brightnessGradient.addColorStop(1, 'rgba(0, 0, 0, 1)');
-  sbCtx.fillStyle = brightnessGradient;
-  sbCtx.fillRect(0, 0, sbCtx.canvas.width, sbCtx.canvas.height);
+  const hue = rgbToHue(huergbselected)
+  console.log(hue)
+  for (row = 0; row < sbCanvas.height; row++) {
+    var grad = sbCtx.createLinearGradient(0, 0, sbCanvas.width, 0);
+    grad.addColorStop(1, 'hsl(' + hue + ', 100%, ' + (sbCanvas.height - row) / sbCanvas.height * 100 + '%)');
+    grad.addColorStop(0, 'hsl(' + hue + ', 0%, ' + (sbCanvas.height - row) / sbCanvas.height * 100 + '%)');
+    sbCtx.fillStyle = grad;
+    sbCtx.fillRect(0, row, sbCanvas.width, 1);
+  }
 }
 let mouseDown = false
 let clickedInH = false
