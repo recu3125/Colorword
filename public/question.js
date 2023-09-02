@@ -33,56 +33,46 @@ hueGradient.addColorStop(0.84, 'rgb(255, 255, 0)');
 hueGradient.addColorStop(1, 'rgb(255, 0, 0)');
 hCtx.fillStyle = hueGradient;
 hCtx.fillRect(0, 0, hCtx.canvas.width, hCtx.canvas.height);
-function rgbToHue(rgb) {
-  // Extract the RGB values using regular expressions
+const HSLToRGB = (h, s, l) => {
+  s /= 100;
+  l /= 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n =>
+    l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  return [255 * f(0), 255 * f(8), 255 * f(4)];
+};
+function RGBToHSL(rgb) {
   const match = rgb.match(/\d+/g);
-  console.log(match)
-  if (!match) {
-    throw new Error('Invalid RGB color format');
-  }
+  r = match[0]
+  g = match[1]
+  b = match[2]
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  let cmin = Math.min(r, g, b),
+    cmax = Math.max(r, g, b),
+    delta = cmax - cmin,
+    h = 0,
+    s = 0,
+    l = 0;
+  if (delta == 0)
+    h = 0;
+  else if (cmax == r)
+    h = ((g - b) / delta) % 6;
+  else if (cmax == g)
+    h = (b - r) / delta + 2;
+  else
+    h = (r - g) / delta + 4;
+  h = Math.round(h * 60);
+  if (h < 0)
+    h += 360;
+  l = (cmax + cmin) / 2;
+  s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+  s = +(s * 100).toFixed(1);
+  l = +(l * 100).toFixed(1);
 
-  // Parse the RGB values
-  const r = parseInt(match[0]);
-  const g = parseInt(match[1]);
-  const b = parseInt(match[2]);
-
-  console.log(r, g, b)
-  // Normalize the RGB values
-  const rNorm = r / 255;
-  const gNorm = g / 255;
-  const bNorm = b / 255;
-
-  // Find the maximum and minimum values among R, G, and B
-  const max = Math.max(rNorm, gNorm, bNorm);
-  const min = Math.min(rNorm, gNorm, bNorm);
-
-  // Calculate the delta
-  const delta = max - min;
-
-  let hue = 0;
-
-  // Calculate the hue
-  if (delta === 0) {
-    hue = 0; // Achromatic (gray)
-  } else {
-    if (max === rNorm) {
-      hue = ((gNorm - bNorm) / delta) % 6;
-    } else if (max === gNorm) {
-      hue = ((bNorm - rNorm) / delta + 2) % 6;
-    } else {
-      hue = ((rNorm - gNorm) / delta + 4) % 6;
-    }
-  }
-
-  // Convert hue to degrees
-  hue = hue * 60;
-
-  // Ensure the hue is non-negative
-  if (hue < 0) {
-    hue += 360;
-  }
-
-  return hue;
+  return [h, s, l]
 }
 
 let sbCanvas = document.getElementById("sb")
@@ -94,7 +84,11 @@ sbCanvasChange('rgb(154, 154, 154)', true)
 isHueSelected = false
 function sbCanvasChange(huergbselected, grayscale) {
   isHueSelected = true
-  const hue = rgbToHue(huergbselected)
+  const hue = RGBToHSL(huergbselected)[0]
+  const prevColor = RGBToHSL(document.getElementById('colorviewer').style.backgroundColor || '154,154,154')
+  const nowColor = HSLToRGB(hue, prevColor[1], prevColor[2])
+  document.getElementById('colorviewer').style.backgroundColor = `rgb(${nowColor[0]},${nowColor[1]},${nowColor[2]})`
+  console.log(grayscale)
   for (row = 0; row < sbCanvas.height; row++) {
     var grad = sbCtx.createLinearGradient(0, 0, sbCanvas.width, 0);
     if (grayscale)
