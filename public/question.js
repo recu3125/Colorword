@@ -18,7 +18,6 @@ function extractRGB(rgbColor) {
 }
 
 let isColorSelected = false
-let isHueSelected = false
 let hCanvas = document.getElementById("h")
 let hCtx = hCanvas.getContext('2d');
 hCanvas.width = hCanvas.clientWidth;
@@ -81,10 +80,7 @@ let sbCtx = sbCanvas.getContext('2d');
 sbCanvas.width = sbCanvas.clientWidth;
 sbCanvas.height = sbCanvas.clientHeight;
 sbCtx.setTransform(1, 0, 0, 1, 0, 0);
-sbCanvasChange('rgb(154, 154, 154)', true)
-isHueSelected = false
 function sbCanvasChange(huergbselected, grayscale) {
-  isHueSelected = true
   const hue = RGBToHSL(huergbselected)[0]
   const prevColor = RGBToHSL(document.getElementById('colorviewer').style.backgroundColor || '154,154,154')
   const nowColor = HSLToRGB(hue, prevColor[1], prevColor[2])
@@ -116,16 +112,10 @@ function onMove(event) {
     y = event.pageY;
   }
   if (isColorSelected) {
-    if (isHueSelected == false) {
-      document.getElementById("submit").textContent = "select hue first!"
-      document.getElementById("submit").style.width = "200px"
-    }
-    else {
-      document.getElementById("submit").textContent = "submit"
-      document.getElementById("submit").style.backgroundColor = "#F0F0F0"
-      document.getElementById("submit").style.color = "#000"
-      document.getElementById("submit").style.width = "100px"
-    }
+    document.getElementById("submit").textContent = "submit"
+    document.getElementById("submit").style.backgroundColor = "#F0F0F0"
+    document.getElementById("submit").style.color = "#000"
+    document.getElementById("submit").style.width = "100px"
   }
   sbMouseX = x - sbCanvas.offsetLeft;
   sbMouseY = y - sbCanvas.offsetTop;
@@ -167,15 +157,9 @@ document.addEventListener('touchmove', onMove);
 
 function onUp(event) {
   if (isColorSelected) {
-    if (isHueSelected == false) {
-      document.getElementById("submit").textContent = "select hue first!"
-      document.getElementById("submit").style.width = "200px"
-    }
-    else {
-      document.getElementById("submit").style.backgroundColor = "#F0F0F0"
-      document.getElementById("submit").style.color = "#000"
-      document.getElementById("submit").textContent = "submit"
-    }
+    document.getElementById("submit").style.backgroundColor = "#F0F0F0"
+    document.getElementById("submit").style.color = "#000"
+    document.getElementById("submit").textContent = "submit"
   }
   mouseDown = false
   clickedInH = false
