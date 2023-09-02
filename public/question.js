@@ -17,6 +17,7 @@ function extractRGB(rgbColor) {
   };
 }
 
+let isColorSelected = false
 let isHueSelected = false
 let hCanvas = document.getElementById("h")
 let hCtx = hCanvas.getContext('2d');
@@ -114,10 +115,10 @@ function onMove(event) {
     x = event.pageX;
     y = event.pageY;
   }
-  if (document.getElementById("colorviewer").style.backgroundColor !== "") {
+  if (isColorSelected) {
     if (isHueSelected == false) {
       document.getElementById("submit").textContent = "select hue first!"
-      document.getElementById("submit").style.width = "170px"
+      document.getElementById("submit").style.width = "200px"
     }
     else {
       document.getElementById("submit").textContent = "submit"
@@ -149,6 +150,7 @@ function onMove(event) {
       let color = 'rgb(' + colorAtMouse[0] + ',' + colorAtMouse[1] + ',' + colorAtMouse[2] + ')';
       if (color != "rgb(0,0,0)") {
         document.getElementById("colorviewer").style.backgroundColor = color
+        isColorSelected = true
         document.getElementById("word").style.color = color
       }
     }
@@ -164,9 +166,11 @@ document.addEventListener('mousemove', onMove);
 document.addEventListener('touchmove', onMove);
 
 function onUp(event) {
-  if (document.getElementById("colorviewer").style.backgroundColor !== "") {
-    if (isHueSelected == false)
+  if (isColorSelected) {
+    if (isHueSelected == false) {
       document.getElementById("submit").textContent = "select hue first!"
+      document.getElementById("submit").style.width = "200px"
+    }
     else {
       document.getElementById("submit").style.backgroundColor = "#F0F0F0"
       document.getElementById("submit").style.color = "#000"
@@ -200,6 +204,7 @@ function onDown(event) {
     let color = 'rgb(' + colorAtMouse[0] + ',' + colorAtMouse[1] + ',' + colorAtMouse[2] + ')';
     if (color != "rgb(0,0,0)") {
       document.getElementById("colorviewer").style.backgroundColor = color
+      isColorSelected = true
       document.getElementById("word").style.color = color
     }
   }
