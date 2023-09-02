@@ -15,6 +15,10 @@ fetch('/resources/wordData.json')
         const item = JSON.parse(localStorage.getItem(wordData.words[i]));
         const wordbtn = document.createElement("button");
         wordbtn.textContent = wordData.words[i];
+        const rgb = localStorage.getItem(wordData.words[i]).match(/\d+/g)
+        const hex = rgb.map(x => { x *= 1; let res = x.toString(16); if (res.length == 1) res = '0' + res; return res })
+        wordbtn.style.border = `1.3px solid #${hex.join('')}`;
+        wordbtn.style.background = `linear-gradient(90deg, #${hex.join('')} 0%, #${hex.join('')} 15%, #f0f0f0 25%, #f0f0f0 100%)`;
 
         (function (index) {
           wordbtn.onclick = function () {
