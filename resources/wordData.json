@@ -42,7 +42,14 @@
     "6",
     "7",
     "8",
-    "9"
+    "9",
+    "Biology",
+    "Physics",
+    "Chemistry",
+    "History",
+    "Algebra",
+    "Geometry",
+    "Literature"
   ],
   "meanings": [
     "Absence of noise or sound.",
@@ -87,6 +94,13 @@
     "It's the number six.",
     "It's the number seven.",
     "It's the number eight.",
-    "It's the number nine."
+    "It's the number nine.",
+    "Study of living organisms.",
+    "Laws of nature and energy.",
+    "Study of matter's behavior.",
+    "Past events and societies.",
+    "Solving equations and symbols.",
+    "Shapes and spatial logic.",
+    "Written artistic expression."
   ]
 }
