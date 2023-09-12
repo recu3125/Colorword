@@ -12,6 +12,16 @@ class RGBColor {
   }
 }
 
+async function setvotescount(word) {
+  let wordscount = JSON.parse(await (await fetch('/api/getwordswithcolorscount')).json())
+  wordscount.map((x) => {
+    if (x[0] == word) {
+      document.getElementById('votecount').innerText = (x[2] + ' votes have been collected.')
+    }
+  })
+}
+
+
 function parseurl() {
   let currentURL = window.location.href;
   let searchParams = new URLSearchParams(window.location.search);
@@ -102,6 +112,7 @@ async function loaded() {
   document.getElementById("word").textContent = word
   document.getElementById("meaning").textContent = meaning
 
+  setvotescount(word)
   makeimage(RGBs)
 }
 
