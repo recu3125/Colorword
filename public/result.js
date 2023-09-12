@@ -112,7 +112,7 @@ async function loaded() {
   document.getElementById("word").textContent = word
   document.getElementById("meaning").textContent = meaning
 
-  setvotescount(word)
+  //setvotescount(word)
   makeimage(RGBs)
 }
 
