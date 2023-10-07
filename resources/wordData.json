@@ -43,13 +43,21 @@
     "7",
     "8",
     "9",
+    "0",
     "Biology",
     "Physics",
     "Chemistry",
     "History",
     "Algebra",
     "Geometry",
-    "Literature"
+    "Literature",
+    "Shyness",
+    "Embrace",
+    "Lie",
+    "Hunger",
+    "Thirst",
+    "Friendship",
+    "Courage"
   ],
   "meanings": [
     "Absence of noise or sound.",
@@ -95,12 +103,20 @@
     "It's the number seven.",
     "It's the number eight.",
     "It's the number nine.",
+    "It's the number zero.",
     "Study of living organisms.",
     "Laws of nature and energy.",
     "Study of matter's behavior.",
     "Past events and societies.",
     "Solving equations and symbols.",
     "Shapes and spatial logic.",
-    "Written artistic expression."
+    "Written artistic expression.",
+    "Timidity or social reserve.",
+    "Act of hugging or accepting.",
+    "False statement or deception.",
+    "Strong desire for food.",
+    "Intense need for liquid.",
+    "Close, supportive relationships.",
+    "Bravery in the face of fear."
   ]
 }
