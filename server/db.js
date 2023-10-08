@@ -109,19 +109,19 @@ function getCurrentDateTime() {
 
 
 function addColor(word, r, g, b) {
-  colorwordModel.findOne({ word: word })
-    .then((word) => {
-      if (!word) {
-        throw new Error('Word not found');
+  colorwordModel.updateOne(
+    { word: word },
+    {
+      $push: {
+        colors: { r: r, g: g, b: b, time: getCurrentDateTime() }
       }
-
-      word.colors.push({ r: r, g: g, b: b, time: getCurrentDateTime() });
-
-      return word.save();
-    })
-    .then(() => {
+    }
+  ).then(result => {
+    if (result.nModified === 0)
+      throw new Error('Word not found');
+    else
       console.log('Word updated successfully');
-    })
+  })
     .catch((error) => {
       console.error('Failed to update word:', error);
     });
@@ -133,7 +133,8 @@ async function getColors(word) {
     if (!wordfound) {
       throw new Error('Word not found');
     }
-    return wordfound.colors;
+    const filteredColors = wordfound.colors.map(({ r, g, b }) => ({ r, g, b }));
+    return filteredColors;
   }
   catch (error) {
     console.error('Failed to retrieve colors:', error);
