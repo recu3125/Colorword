@@ -222,7 +222,7 @@ function shuffle(obj1, obj2) {
 //단어배정
 let wordsWithColorsCount, wordnum
 (async () => {
-  wordsWithColorsCount = JSON.parse(await (await fetch('/api/getwordswithcolorscount')).json())
+  wordsWithColorsCount = await (await fetch('/api/getwordswithcolorscount')).json()
   if (Math.random() * 100 > 50)
     wordsWithColorsCount.sort((x, y) => x[2] - y[2])
   else

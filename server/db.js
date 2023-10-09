@@ -144,15 +144,23 @@ async function getColors(word) {
 
 async function getWordsWithColorsCount() {
   try {
-    const documents = await colorwordModel.find({}).lean().exec();
-    const wordsWithColorsCountPromises = documents.map(async (wordfound) => {
-      const colorLength = wordfound.colors ? wordfound.colors.length : 0;
-      return [wordfound.word, wordfound.meaning, colorLength];
-    });
+    const aggregationPipeline = [
+      {
+        $match: {
+          colors: { $exists: true, $ne: [] },
+        },
+      },
+      {
+        $project: {
+          word: 1,
+          meaning: 1,
+          colorCount: { $size: '$colors' },
+        },
+      },
+    ];
 
-    const wordsWithColorsCount = await Promise.all(wordsWithColorsCountPromises);
-
-    return wordsWithColorsCount;
+    const result = await colorwordModel.aggregate(aggregationPipeline);
+    return (result.map((wordInfo) => [wordInfo.word, wordInfo.meaning, wordInfo.colorCount]))
   } catch (err) {
     console.error(err);
     throw err;

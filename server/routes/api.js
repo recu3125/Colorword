@@ -22,7 +22,7 @@ router.get('/colors', (req, res) => {
 });
 
 router.get('/getwordswithcolorscount', async (req, res) => {
-  res.json(JSON.stringify(await getWordsWithColorsCount()))
+  res.json(await getWordsWithColorsCount())
 });
 
 module.exports = router;
