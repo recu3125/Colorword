@@ -76,7 +76,7 @@ async function loaded() {
   //mostcolor
   let mostcolor1 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
   let mostcolor2, mostcolor3
-  const delradiusarray = [15, 10, 5, 2, 0]
+  const delradiusarray = [30, 15, 10, 5, 2, 0]
   if (LABs.length >= 3) {
     let delradiusindex = 0
     while (neardelete(LABs, RGBtoLAB(mostcolor1), delradiusarray[delradiusindex]).length < 2) {
@@ -346,7 +346,7 @@ function approach(LABs, xyz, step, stepcount) {
     let y = xyz[1] + offsets[i][1] * step
     let z = xyz[2] + offsets[i][2] * step
     //let nearcountres = nearcount(LABs, x, y, z, radius)
-    let nearcountres = LABs.reduce((accumulator, current) => accumulator + 1 / colordistlab(current, [x, y, z]), 0);
+    let nearcountres = LABs.reduce((accumulator, current) => accumulator + 1 / Math.max(colordistlab(current, [x, y, z]), 50), 0);
     if (nearcountres > max) {
       max = nearcountres
       resultxyz = [x, y, z]
