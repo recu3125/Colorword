@@ -75,6 +75,7 @@ function RGBToHSL(rgb) {
   return [h, s, l]
 }
 
+let onceClickedInSb = false
 let sbCanvas = document.getElementById("sb")
 let sbCtx = sbCanvas.getContext('2d');
 sbCanvas.width = sbCanvas.clientWidth;
@@ -85,6 +86,9 @@ function sbCanvasChange(huergbselected, grayscale) {
   const prevColor = RGBToHSL(document.getElementById('colorviewer').style.backgroundColor || '154,154,154')
   const nowColor = HSLToRGB(hue, prevColor[1], prevColor[2])
   document.getElementById('colorviewer').style.backgroundColor = `rgb(${nowColor[0]},${nowColor[1]},${nowColor[2]})`
+  if (onceClickedInSb) {
+    document.getElementById("word").style.color = `rgb(${nowColor[0]},${nowColor[1]},${nowColor[2]})`
+  }
   console.log(grayscale)
   for (row = 0; row < sbCanvas.height; row++) {
     var grad = sbCtx.createLinearGradient(0, 0, sbCanvas.width, 0);
@@ -179,6 +183,7 @@ function onDown(event) {
   }
   if (sbIn) {
     clickedInSb = true
+    onceClickedInSb =true
   }
   else {
     clickedInSb = false
