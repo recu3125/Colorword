@@ -115,7 +115,8 @@
 
     .color-label {
       font-family: KCCGanpan;
-      margin-bottom: 16px;
+      margin-bottom: 6px;
+      margin-top: 20px;
       width: 100%;
     }
 
@@ -123,7 +124,7 @@
       width: 100%;
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 3px;
     }
 
     .color-viewer {
@@ -245,13 +246,15 @@
         <canvas id="colorsort" width="100px" height="100px"></canvas>
       </div>
       <div>
-        <div class="color-label">Color You Selected</div>
+        <div class="color-label" style="margin-top: 0px;">Color You Selected</div>
         <div class="color-viewer-container">
           <div id="sel0" class="color-viewer"></div>
-          <div id="name0" class="color-name"> </div>
+          <div id="name0" class="color-name"> asdf</div>
         </div>
 
-        <div class="color-label">Most Selected</div>
+        <div id="similarcount" class="color-name" style="margin-bottom: 0px; margin-left: 20px; color: #333;"></div>
+
+        <div class="color-label" style="margin-top: 6px;">Most Selected</div>
         <div class="color-viewer-container">
           <div id="sel1" class="color-viewer"></div>
           <div id="name1" class="color-name"> </div>

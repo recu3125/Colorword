@@ -68,10 +68,11 @@ async function loaded() {
   document.title = 'Colorword - ' + word
   let selectedRGB = new RGBColor(r, g, b, 255)
   let RGBs = await getRGBs()
-  RGBs = await matchcolorscount(RGBs, imagewh * imagewh)
   let LABs = await RGBs.map(x => RGBtoLAB(x))
   let selectedLAB = RGBtoLAB(selectedRGB)
-  //let percent = nearcount(LABs, selectedLAB[0], selectedLAB[1], selectedLAB[2], 20) //비슷한 선택을 한 사람 수
+  let similarcount = nearcount(LABs, selectedLAB[0], selectedLAB[1], selectedLAB[2], 25) //비슷한 선택을 한 사람 수
+  let votecount = LABs.length
+  RGBs = await matchcolorscount(RGBs, imagewh * imagewh)
 
   //mostcolor
   let mostcolor1 = nearestcolor(RGBs, LABtoRGB(mostcolor(LABs)))
@@ -105,6 +106,7 @@ async function loaded() {
   document.getElementById("sel3").style.backgroundColor = `rgb(${mostcolor3.r}, ${mostcolor3.g}, ${mostcolor3.b})`
 
   document.getElementById("name0").textContent = await identifyColor(selectedRGB)
+  document.getElementById("similarcount").textContent =`${similarcount} of ${votecount} agree with you!`
   document.getElementById("name1").textContent = await identifyColor(mostcolor1)
   document.getElementById("name2").textContent = await identifyColor(mostcolor2)
   document.getElementById("name3").textContent = await identifyColor(mostcolor3)
