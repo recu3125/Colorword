@@ -13,4 +13,3 @@
 <br>
 <br>Colorword는 사람들이 단어에서 떠올린 색들을 모아 색이 조합된 사진 하나로 만드는 프로젝트 웹사이트입니다!
 <br> 
-<a href="https://recu.notion.site/Colorword-245268f1150c41edb902a4dac9977eef">개발노트</a>
