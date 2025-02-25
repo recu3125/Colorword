@@ -1,5 +1,15 @@
-const mongoose = require('mongoose');
+const { exec } = require('child_process');
+const path = require('path');
+const fs = require('fs');
 
+// 상위 폴더에 백업
+const backupPath = path.join(__dirname, '../auto_backup', 
+  new Date().toISOString().replace(/[:.]/g, '-'));
+fs.mkdirSync(backupPath, { recursive: true });
+exec(`mongodump --db=colorword --out="${backupPath}"`, 
+  (err) => err && console.error('백업 실패:', err));
+
+const mongoose = require('mongoose');
 mongoose.connect(`mongodb://127.0.0.1:27017/colorword`, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected successfully to MongoDB server');
@@ -72,15 +82,54 @@ Promise.all(promises)
             .then(() => {
               console.log(`Deleted ${extraDocuments.length} extra documents.`);
             })
-            .catch((deleteError) => {
-              console.error('Failed to delete extra documents:', deleteError);
-            });
         }
       })
   })
+  .then(() => cleanInvalidColors())
+  .then(() => {
+    console.log('Database cleanup completed successfully');
+  })
   .catch((error) => {
-    console.error('Failed to add or update documents:', error);
+    console.error('Failed during cleanup process:', error);
   });
+
+// 유효하지 않은 색상 데이터 정리 함수
+async function cleanInvalidColors() {
+  try {
+    const allDocs = await colorwordModel.find().exec();
+    let totalCleaned = 0;
+
+    const bulkOps = [];
+    for (const doc of allDocs) {
+      const validColors = doc.colors.filter(color => 
+        Number.isInteger(color.r) && color.r >= 0 && color.r <= 255 &&
+        Number.isInteger(color.g) && color.g >= 0 && color.g <= 255 &&
+        Number.isInteger(color.b) && color.b >= 0 && color.b <= 255
+      );
+
+      if (validColors.length !== doc.colors.length) {
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: doc._id },
+            update: { $set: { colors: validColors } }
+          }
+        });
+        totalCleaned += (doc.colors.length - validColors.length);
+      }
+    }
+
+    if (bulkOps.length > 0) {
+      await colorwordModel.bulkWrite(bulkOps);
+      console.log(`Cleaned ${totalCleaned} invalid color entries from ${bulkOps.length} documents.`);
+      return true;
+    }
+    console.log('No invalid color entries found.');
+    return false;
+  } catch (error) {
+    console.error('Error during color cleanup:', error);
+    throw error;
+  }
+}
 
 function getCurrentDateTime() {
   // Create a new Date object
