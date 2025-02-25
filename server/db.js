@@ -109,6 +109,12 @@ function getCurrentDateTime() {
 
 
 function addColor(word, r, g, b) {
+  if (!Number.isInteger(r) || r < 0 || r > 255 ||
+      !Number.isInteger(g) || g < 0 || g > 255 ||
+      !Number.isInteger(b) || b < 0 || b > 255) {
+    console.error('Invalid color values. r, g, and b must be integers between 0 and 255.');
+    return;
+  }
   colorwordModel.updateOne(
     { word: word },
     {
@@ -146,20 +152,20 @@ async function getWordsWithColorsCount() {
   try {
     const aggregationPipeline = [
       {
-        $match: {
-          colors: { $exists: true, $ne: [] },
-        },
-      },
-      {
         $project: {
           word: 1,
           meaning: 1,
-          colorCount: { $size: '$colors' },
+          colorCount: {
+            $size: {
+              $ifNull: ['$colors', []], // Use an empty array if colors is null or missing
+            },
+          },
         },
       },
     ];
 
     const result = await colorwordModel.aggregate(aggregationPipeline);
+    console.log (result)
     return (result.map((wordInfo) => [wordInfo.word, wordInfo.meaning, wordInfo.colorCount]))
   } catch (err) {
     console.error(err);
