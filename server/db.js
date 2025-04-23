@@ -214,7 +214,6 @@ async function getWordsWithColorsCount() {
     ];
 
     const result = await colorwordModel.aggregate(aggregationPipeline);
-    console.log (result)
     return (result.map((wordInfo) => [wordInfo.word, wordInfo.meaning, wordInfo.colorCount]))
   } catch (err) {
     console.error(err);
