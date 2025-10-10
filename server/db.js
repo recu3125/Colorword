@@ -85,13 +85,13 @@ Promise.all(promises)
         }
       })
   })
-  .then(() => cleanInvalidColors())
-  .then(() => {
-    console.log('Database cleanup completed successfully');
-  })
-  .catch((error) => {
-    console.error('Failed during cleanup process:', error);
-  });
+  // .then(() => cleanInvalidColors())
+  // .then(() => {
+  //   console.log('Database cleanup completed successfully');
+  // })
+  // .catch((error) => {
+  //   console.error('Failed during cleanup process:', error);
+  // });
 
 // 유효하지 않은 색상 데이터 정리 함수
 async function cleanInvalidColors() {
@@ -173,7 +173,7 @@ function addColor(word, r, g, b) {
     }
   ).then(result => {
     if (result.nModified === 0)
-      throw new Error('Word not found');
+      console.error(`Word not found: ${word}`);
     else
       console.log('Word updated successfully');
   })
@@ -226,3 +226,4 @@ module.exports = {
   getColors,
   getWordsWithColorsCount
 }
+
