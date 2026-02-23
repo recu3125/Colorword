@@ -1,6 +1,10 @@
 {
+  "scripts": {
+    "start": "node server/server.js"
+  },
   "dependencies": {
     "express": "^4.18.2",
-    "mongoose": "^7.8.4"
+    "sql.js": "^1.14.0"
   }
 }
+

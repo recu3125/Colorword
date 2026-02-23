@@ -54,11 +54,15 @@ async function identifyColor(RGB) {
 async function getRGBs() {
   const { word, meaning, r, g, b } = parseurl()
   const response = await fetch('/api/colors?word=' + word)
-  const colorsData = JSON.parse(await response.json());
-  const colors = colorsData.map(colorData => {
-    const { r, g, b } = colorData;
-    return new RGBColor(parseInt(r), parseInt(g), parseInt(b), 255);
-  });
+  if (!response.ok) {
+    return []
+  }
+
+  const bytes = new Uint8Array(await response.arrayBuffer())
+  const colors = []
+  for (let i = 0; i + 2 < bytes.length; i += 3) {
+    colors.push(new RGBColor(bytes[i], bytes[i + 1], bytes[i + 2], 255))
+  }
   return colors
 }
 

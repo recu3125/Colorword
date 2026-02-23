@@ -1,148 +1,16 @@
-const { exec } = require('child_process');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+const initSqlJs = require('sql.js');
 
-// 상위 폴더에 백업
-const backupPath = path.join(__dirname, '../auto_backup', 
-  new Date().toISOString().replace(/[:.]/g, '-'));
-fs.mkdirSync(backupPath, { recursive: true });
-exec(`mongodump --db=colorword --out="${backupPath}"`, 
-  (err) => err && console.error('백업 실패:', err));
-
-const mongoose = require('mongoose');
-mongoose.connect(`mongodb://127.0.0.1:27017/colorword`, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log('Connected successfully to MongoDB server');
-  })
-  .catch((err) => {
-    console.error('Failed to connect to MongoDB server:', err);
-  });
-
-const colorwordSchema = new mongoose.Schema({
-  word: {
-    type: String,
-    unique: true
-  },
-  meaning: String,
-  colors: [{
-    r: Number,
-    g: Number,
-    b: Number,
-    time: String
-  }]
-});
-
-const colorwordModel = mongoose.model('colorword', colorwordSchema);
-
-//data init
-const wordData = require('../resources/wordData.json');
-const words = wordData.words;
-const meanings = wordData.meanings;
-
-const promises = [];
-
-let added = []
-for (let i = 0; i < words.length; i++) {
-  promises.push(
-    colorwordModel.findOne({ word: words[i] })
-      .then((existingColorword) => {
-        if (!existingColorword) {
-          added.push(words[i])
-          const colorword = new colorwordModel({
-            word: words[i],
-            meaning: meanings[i],
-            color: []
-          });
-          return colorword.save();
-        }
-      })
-      .catch((error) => {
-        console.error('Error while checking document:', error);
-      })
-  );
-}
-
-Promise.all(promises)
-  .then(() => {
-    if (added.length >= 1) {
-      console.log(`Words:${added} added or updated successfully.`);
-    }
-    else {
-      console.log('Collection is complete. Skipping addition.');
-    }
-    colorwordModel.find({}, 'word')
-      .then((dbWords) => {
-        const extraDocuments = dbWords.filter(colorword => !words.includes(colorword.word));
-        if (extraDocuments.length >= 1) {
-          console.log(`Db has ${extraDocuments.length} extra documents : ${extraDocuments.map(x => x.word)}`);
-
-          // Delete extra documents from the collection
-          const extraDocumentIds = extraDocuments.map(doc => doc._id);
-          colorwordModel.deleteMany({ _id: { $in: extraDocumentIds } })
-            .then(() => {
-              console.log(`Deleted ${extraDocuments.length} extra documents.`);
-            })
-        }
-      })
-  })
-  // .then(() => cleanInvalidColors())
-  // .then(() => {
-  //   console.log('Database cleanup completed successfully');
-  // })
-  // .catch((error) => {
-  //   console.error('Failed during cleanup process:', error);
-  // });
-
-// 유효하지 않은 색상 데이터 정리 함수
-async function cleanInvalidColors() {
-  try {
-    const allDocs = await colorwordModel.find().exec();
-    let totalCleaned = 0;
-
-    const bulkOps = [];
-    for (const doc of allDocs) {
-      const validColors = doc.colors.filter(color => 
-        Number.isInteger(color.r) && color.r >= 0 && color.r <= 255 &&
-        Number.isInteger(color.g) && color.g >= 0 && color.g <= 255 &&
-        Number.isInteger(color.b) && color.b >= 0 && color.b <= 255
-      );
-
-      if (validColors.length !== doc.colors.length) {
-        bulkOps.push({
-          updateOne: {
-            filter: { _id: doc._id },
-            update: { $set: { colors: validColors } }
-          }
-        });
-        totalCleaned += (doc.colors.length - validColors.length);
-      }
-    }
-
-    if (bulkOps.length > 0) {
-      await colorwordModel.bulkWrite(bulkOps);
-      console.log(`Cleaned ${totalCleaned} invalid color entries from ${bulkOps.length} documents.`);
-      return true;
-    }
-    console.log('No invalid color entries found.');
-    return false;
-  } catch (error) {
-    console.error('Error during color cleanup:', error);
-    throw error;
-  }
-}
+const DB_PATH = path.join(__dirname, 'colorword.sqlite');
+const BACKUP_DIR = path.join(__dirname, '..', 'sqlite_backups');
 
 function getCurrentDateTime() {
-  // Create a new Date object
   const date = new Date();
-
-  // Get the UTC time offset for the specified time zone (in minutes)
   const timeZoneOffset = new Date().getTimezoneOffset();
-
-  // Apply the timezone offset to the current date
   const targetTime = new Date(date.getTime() - (timeZoneOffset * 60000));
 
-  // Format the date and time as "yyyy-MM-dd-hh-mm-ss"
-  const formattedDateTime = targetTime.toLocaleString('ko-KR', {
+  return targetTime.toLocaleString('ko-KR', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -152,46 +20,171 @@ function getCurrentDateTime() {
     hour12: true,
     timeZone: 'UTC'
   });
-
-  return formattedDateTime;
 }
 
+function persistDb(db) {
+  const data = db.export();
+  fs.writeFileSync(DB_PATH, Buffer.from(data));
+}
 
-function addColor(word, r, g, b) {
+function getMonthStamp(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+}
+
+function createMonthlyBackupIfNeeded() {
+  if (!fs.existsSync(DB_PATH)) return;
+
+  fs.mkdirSync(BACKUP_DIR, { recursive: true });
+  const monthStamp = getMonthStamp();
+  const backupName = `colorword-${monthStamp}.sqlite`;
+  const backupPath = path.join(BACKUP_DIR, backupName);
+
+  if (!fs.existsSync(backupPath)) {
+    fs.copyFileSync(DB_PATH, backupPath);
+    console.log(`SQLite monthly backup created: ${backupPath}`);
+  }
+
+  const backupFiles = fs.readdirSync(BACKUP_DIR)
+    .filter((name) => /^colorword-\d{4}-\d{2}\.sqlite$/.test(name))
+    .sort((a, b) => b.localeCompare(a));
+
+  for (let i = 2; i < backupFiles.length; i += 1) {
+    fs.rmSync(path.join(BACKUP_DIR, backupFiles[i]), { force: true });
+  }
+}
+
+function allRows(db, sql, params = []) {
+  const stmt = db.prepare(sql);
+  stmt.bind(params);
+  const rows = [];
+  while (stmt.step()) {
+    rows.push(stmt.getAsObject());
+  }
+  stmt.free();
+  return rows;
+}
+
+function oneRow(db, sql, params = []) {
+  const rows = allRows(db, sql, params);
+  return rows.length > 0 ? rows[0] : null;
+}
+
+const ready = (async () => {
+  const SQL = await initSqlJs({
+    locateFile: (file) => path.join(__dirname, '..', 'node_modules', 'sql.js', 'dist', file)
+  });
+
+  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+
+  const db = fs.existsSync(DB_PATH)
+    ? new SQL.Database(fs.readFileSync(DB_PATH))
+    : new SQL.Database();
+
+  db.run(`
+PRAGMA journal_mode=WAL;
+PRAGMA foreign_keys=ON;
+CREATE TABLE IF NOT EXISTS words (
+  word TEXT PRIMARY KEY,
+  meaning TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS colors (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  word TEXT NOT NULL,
+  r INTEGER NOT NULL CHECK(r BETWEEN 0 AND 255),
+  g INTEGER NOT NULL CHECK(g BETWEEN 0 AND 255),
+  b INTEGER NOT NULL CHECK(b BETWEEN 0 AND 255),
+  time TEXT NOT NULL,
+  FOREIGN KEY (word) REFERENCES words(word) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_colors_word ON colors(word);
+`);
+
+  const wordData = require('../resources/wordData.json');
+  const words = wordData.words || [];
+  const meanings = wordData.meanings || [];
+  const upsertWordStmt = db.prepare(`
+INSERT INTO words(word, meaning)
+VALUES (?, ?)
+ON CONFLICT(word) DO UPDATE SET meaning=excluded.meaning
+WHERE words.meaning <> excluded.meaning;
+`);
+
+  let changed = !fs.existsSync(DB_PATH);
+
+  db.run('BEGIN;');
+  try {
+    for (let i = 0; i < words.length; i += 1) {
+      upsertWordStmt.run([words[i], meanings[i] || '']);
+      if (db.getRowsModified() > 0) {
+        changed = true;
+      }
+      upsertWordStmt.reset();
+    }
+    db.run('COMMIT;');
+  } catch (error) {
+    db.run('ROLLBACK;');
+    upsertWordStmt.free();
+    throw error;
+  }
+  upsertWordStmt.free();
+
+  if (changed) {
+    persistDb(db);
+  }
+
+  createMonthlyBackupIfNeeded();
+
+  console.log(`SQLite initialized. Synced ${words.length} words.`);
+  return { db };
+})();
+
+let writeQueue = Promise.resolve();
+
+function enqueueWrite(task) {
+  writeQueue = writeQueue.then(task, task);
+  return writeQueue;
+}
+
+async function addColor(word, r, g, b) {
   if (!Number.isInteger(r) || r < 0 || r > 255 ||
       !Number.isInteger(g) || g < 0 || g > 255 ||
       !Number.isInteger(b) || b < 0 || b > 255) {
     console.error('Invalid color values. r, g, and b must be integers between 0 and 255.');
     return;
   }
-  colorwordModel.updateOne(
-    { word: word },
-    {
-      $push: {
-        colors: { r: r, g: g, b: b, time: getCurrentDateTime() }
-      }
-    }
-  ).then(result => {
-    if (result.nModified === 0)
+
+  return enqueueWrite(async () => {
+    const { db } = await ready;
+    const exists = oneRow(db, 'SELECT 1 AS ok FROM words WHERE word = ? LIMIT 1;', [word]);
+    if (!exists) {
       console.error(`Word not found: ${word}`);
-    else
-      console.log('Word updated successfully');
-  })
-    .catch((error) => {
-      console.error('Failed to update word:', error);
-    });
+      return;
+    }
+
+    db.run(
+      'INSERT INTO colors(word, r, g, b, time) VALUES (?, ?, ?, ?, ?);',
+      [word, r, g, b, getCurrentDateTime()]
+    );
+    persistDb(db);
+  }).catch((error) => {
+    console.error('Failed to update word:', error);
+    throw error;
+  });
 }
 
 async function getColors(word) {
   try {
-    const wordfound = await colorwordModel.findOne({ word: word }).lean().exec();
-    if (!wordfound) {
+    const { db } = await ready;
+    const exists = oneRow(db, 'SELECT 1 AS ok FROM words WHERE word = ? LIMIT 1;', [word]);
+    if (!exists) {
       throw new Error('Word not found');
     }
-    const filteredColors = wordfound.colors.map(({ r, g, b }) => ({ r, g, b }));
-    return filteredColors;
-  }
-  catch (error) {
+
+    return allRows(db, 'SELECT r, g, b FROM colors WHERE word = ? ORDER BY id ASC;', [word])
+      .map((row) => ({ r: Number(row.r), g: Number(row.g), b: Number(row.b) }));
+  } catch (error) {
     console.error('Failed to retrieve colors:', error);
     throw error;
   }
@@ -199,31 +192,28 @@ async function getColors(word) {
 
 async function getWordsWithColorsCount() {
   try {
-    const aggregationPipeline = [
-      {
-        $project: {
-          word: 1,
-          meaning: 1,
-          colorCount: {
-            $size: {
-              $ifNull: ['$colors', []], // Use an empty array if colors is null or missing
-            },
-          },
-        },
-      },
-    ];
+    const { db } = await ready;
+    const rows = allRows(db, `
+SELECT w.word, w.meaning, COUNT(c.id) AS colorCount
+FROM words w
+LEFT JOIN colors c ON c.word = w.word
+GROUP BY w.word, w.meaning
+ORDER BY w.word ASC;
+`);
 
-    const result = await colorwordModel.aggregate(aggregationPipeline);
-    return (result.map((wordInfo) => [wordInfo.word, wordInfo.meaning, wordInfo.colorCount]))
-  } catch (err) {
-    console.error(err);
-    throw err;
+    return rows.map((row) => [row.word, row.meaning, Number(row.colorCount)]);
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 }
 
 module.exports = {
   addColor,
   getColors,
-  getWordsWithColorsCount
-}
-
+  getWordsWithColorsCount,
+  DB_PATH,
+  ready,
+  persistDb,
+  allRows
+};
